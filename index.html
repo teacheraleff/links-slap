@@ -52,7 +52,9 @@
 
         .main-link {
             display: block; 
-            width: 100%;
+            width: 85%; /* Diminuído horizontalmente */
+            max-width: 340px; /* Adicionado max-width para desktop views */
+            margin: 0 auto; /* Centralizado */
             padding: 1rem 1.5rem;
             border-radius: 0.75rem;
             font-weight: 700;
@@ -75,7 +77,8 @@
         .tag-cta {
             position: absolute;
             top: -12px; 
-            left: -10px; /* Deslocado para a esquerda */
+            left: 7.5%; /* Posição calculada para a borda esquerda do link de 85% */
+            margin-left: -5px; /* Ajuste final para a tag sair um pouco mais */
             background-color: var(--slap-yellow); /* Amarelo */
             color: #1f2937; /* Texto escuro no amarelo (mantido para contraste) */
             padding: 0.2rem 0.6rem;
@@ -255,13 +258,13 @@
 
     <div class="linktree-card">
         
-        <!-- LOGO HORIZONTAL COM FADE E MAIOR ALTURA (200px) --><div class="text-center mb-8 relative"> 
+        <!-- LOGO HORIZONTAL COM FADE E MAIOR ALTURA (240px) --><div class="text-center mb-8 relative"> 
             <div class="image-fade-container">
                 <img 
                     src="https://res.cloudinary.com/dqfi22uz0/image/upload/v1760668195/Co%CC%81pia_de_IMG_9546_zd9grm.jpg" 
                     alt="Logo Horizontal SLAP" 
                     class="w-full h-auto" 
-                    style="max-height: 200px; object-fit: contain;" 
+                    style="max-height: 240px; object-fit: contain;" /* ALTURA AUMENTADA PARA 240px */
                     onerror="this.src='https://placehold.co/300x70/8671d1/F1D24B?text=SLAP+LOGO+HORIZONTAL'"
                 >
                 <div class="image-fade-overlay"></div> 
