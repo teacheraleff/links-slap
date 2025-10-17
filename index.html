@@ -77,8 +77,8 @@
         .tag-cta {
             position: absolute;
             top: -12px; 
-            left: 7.5%; /* Posição calculada para a borda esquerda do link de 85% */
-            margin-left: -5px; /* Ajuste final para a tag sair um pouco mais */
+            left: 5%; /* Mais para a esquerda (5% do contêiner) */
+            margin-left: -10px; /* Ajuste para sair um pouco mais */
             background-color: var(--slap-yellow); /* Amarelo */
             color: #1f2937; /* Texto escuro no amarelo (mantido para contraste) */
             padding: 0.2rem 0.6rem;
@@ -275,7 +275,7 @@
             <img 
                 src="https://res.cloudinary.com/dqfi22uz0/image/upload/v1749349751/DBB440C2-684E-4DCF-9CD3-B2DDC18F1E53_3_vgocga.jpg" 
                 alt="Foto de Perfil SLAF" 
-                class="w-28 h-28 rounded-full object-cover mb-2 border-2 border-gray-700" 
+                class="w-28 h-28 rounded-full object-cover mb-2" /* Borda removida */
                 onerror="this.src='https://placehold.co/120x120/F1D24B/8671d1?text=SLAP'"
             >
             <!-- TÍTULO ALTERADO E MARGEM REDUZIDA PARA mb-2 --><h1 class="text-xl font-extrabold text-gray-50 mb-2">LINKS DO SLAP</h1>
@@ -347,9 +347,6 @@
                 
                 <label class="block text-left text-sm font-medium text-gray-400">Data de Nascimento (Obrigatório)</label>
                 <input type="date" name="birthdate" required class="form-input">
-
-                <label class="block text-left text-sm font-medium text-gray-400">E-mail (Obrigatório)</label>
-                <!-- O campo _replyto é padrão Formspree para o e-mail do remetente --><input type="email" name="_replyto" required class="form-input" placeholder="seu.email@exemplo.com">
 
                 <label class="block text-left text-sm font-medium text-gray-400">Link do Currículo/Portfólio (Obrigatório)</label>
                 <input type="url" name="cv_link" required class="form-input" placeholder="Link (Google Drive, LinkedIn, etc.)">
