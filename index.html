@@ -1,308 +1,1005 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SLAP Links</title>
-    
-    <!-- Tailwind CSS CDN --><script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts: DM Sans --><link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome for Icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJ/cnM7V6h7gA6/J+rVwW8b/f5FfB3N4d2M1g3p2x/r/bQ+mB4lP5g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    
+    <title>English Teachers' Knowledge Challenge</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter font family -->
     <style>
-        :root {
-            --slap-yellow: #F1D24B; /* VOLTOU AO AMARELO ORIGINAL */
-            --slap-purple: #8671d1;
-            --text-light: #e5e7eb; /* Novo texto claro para tema escuro */
-        }
-
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background-color: #121212; /* Fundo ESCURO */
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start; 
-            align-items: center;
-            /* PADDING E MARGEM REMOVIDOS PARA ALINHAMENTO NO TOPO */
-            padding: 0; 
-            margin: 0; /* REMOVE MARGENS PADRÃO DO NAVEGADOR */
-            color: var(--text-light); /* Cor de texto padrão clara */
-        }
-
-        .linktree-card {
-            width: 100%;
-            /* DESIGN ESCURO FLATTENED */
-            background-color: transparent; 
-            padding: 0; 
-            border-radius: 0; 
-            box-shadow: none; 
-            margin-bottom: 2rem;
-            border: none;
-            margin-top: 0; 
-        }
-
-        /* Estilo dos Links Principais (LINKS) */
-        .main-link-container {
-            position: relative; 
-            margin-bottom: 1.75rem; /* Ajustado para 1.75rem */
-        }
-
-        .main-link {
-            display: block; 
-            width: 85%; /* Diminuído horizontalmente */
-            max-width: 340px; /* Adicionado max-width para desktop views */
-            margin: 0 auto; /* Centralizado */
-            padding: 1rem 1.5rem;
-            border-radius: 0.75rem;
-            font-weight: 700;
-            color: var(--text-light); /* Texto claro */
-            background-color: #1a1a1a; /* Fundo escuro para os links */
-            text-align: center;
-            transition: all 0.2s;
-            border: 2px solid #374151; /* Borda escura sutil */
-            text-decoration: none; 
-        }
-
-        .main-link:hover {
-            background-color: #2a2a2a;
-            border-color: var(--slap-yellow); /* Borda Amarelo SLAP no hover */
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        /* Minimalist base style */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #fcfcfc; /* Very light background */
         }
         
-        /* Tags de Destaque (CTAs) */
-        .tag-cta {
-            position: absolute;
-            top: -12px; 
-            left: 5%; /* Mais para a esquerda (5% do contêiner) */
-            margin-left: -10px; /* Ajuste para sair um pouco mais */
-            background-color: var(--slap-yellow); /* Amarelo */
-            color: #1f2937; /* Texto escuro no amarelo (mantido para contraste) */
-            padding: 0.2rem 0.6rem;
-            border-radius: 0; /* Bordas retas */
-            font-size: 0.7rem; 
-            font-weight: 800;
-            letter-spacing: 0.05em;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.4); 
-            z-index: 10; 
+        /* Option Button Styling */
+        .option-button {
+            transition: all 0.2s ease-in-out;
+            border: 1px solid #d1d5db; /* Default light border */
+            border-radius: 8px; 
+        }
+        .option-button:hover:not(.selected) {
+            background-color: #f3f4f6; /* Very light hover effect */
         }
         
-        /* Estilo dos Ícones Sociais (BOTOES) */
-        .social-icon {
-            color: var(--slap-yellow); /* Ícones Amarelo SLAP (alto contraste) */
-            transition: all 0.2s;
-            font-size: 1.5rem;
+        /* Feedback colors (must remain clear) */
+        .correct {
+            background-color: #10b981 !important; /* Tailwind green-500 */
+            color: white !important;
+            border-color: #10b981 !important;
         }
-
-        .social-icon:hover {
-            color: var(--slap-purple); /* Roxo no hover */
-            transform: scale(1.1);
-        }
-
-        /* Estilo para o container da imagem/carrossel - FIXA A ALTURA */
-        .image-fade-container {
-            position: relative;
-            width: 100%;
-            overflow: hidden; 
-            border-radius: 0; 
-            box-shadow: none; 
-            height: 240px; /* Altura fixa para o carrossel */
+        .incorrect {
+            background-color: #ef4444 !important; /* Tailwind red-500 */
+            color: white !important;
+            border-color: #ef4444 !important;
         }
         
-        /* ESTILO PARA SLIDES DO CARROSSEL */
-        .carousel-slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 1s ease-in-out; /* Transição suave de 1 segundo */
+        /* Subtle Selection State */
+        .selected:not(.correct):not(.incorrect) {
+            background-color: #eff6ff !important; /* Tailwind blue-50 (very light blue) */
+            border-color: #3b82f6 !important; /* Accent border */
+            color: #1f2937 !important; /* Keep text dark for contrast */
         }
-        
-        .carousel-slide.active {
-            opacity: 1;
-        }
-
-        .header-image {
-            width: 100%;
-            height: 100%;
-            max-height: 240px;
-            object-fit: contain;
-        }
-
-        .image-fade-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            /* Gradiente de fade: Fundo ESCURO (#121212) */
-            background: linear-gradient(
-                to bottom,
-                rgba(18, 18, 18, 0.1) 0%, 
-                rgba(18, 18, 18, 0) 5%, 
-                rgba(18, 18, 18, 0) 80%, 
-                rgba(18, 18, 18, 0.8) 95%, 
-                rgba(18, 18, 18, 1) 100% /* Fade Inferior (OK) */
-            ), 
-            /* AJUSTE DO FADE LATERAL: Forte nas extremidades, mais transparente no centro */
-            linear-gradient(
-                to right,
-                rgba(18, 18, 18, 1) 0%,   /* Preto total no canto (Blends com #121212) */
-                rgba(18, 18, 18, 0) 20%,  /* Totalmente transparente no centro */
-                rgba(18, 18, 18, 0) 80%,  /* Totalmente transparente no centro */
-                rgba(18, 18, 18, 1) 100%  /* Preto total no canto (Blends com #121212) */
-            );
-            z-index: 2; /* Acima da imagem */
-        }
-
     </style>
 </head>
-<body>
+<body class="min-h-screen flex items-center justify-center p-4">
 
-    <!-- NOVO CONTAINER PRINCIPAL (WRAPPER) - ALINHA O CARROSSEL NO TOPO (pt-0) E APLICA PADDING LATERAL --><div class="w-full max-w-sm px-4 mx-auto pb-4 pt-0">
+    <div id="quiz-container" class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6 md:p-10">
         
-        <div class="linktree-card">
-        
-            <!-- CARROSSEL DE IMAGENS (HEADER) - Encosta no topo --><div class="text-center mb-8 relative mt-0"> 
-                <div class="image-fade-container">
-                    <div id="header-carousel" class="w-full h-full relative">
-                        <!-- As imagens serão injetadas aqui pelo JavaScript --></div>
-                    <div class="image-fade-overlay"></div> 
-                </div>
-            </div>
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-2">English Teachers' Knowledge Challenge</h1>
+            <p class="text-lg text-gray-500">Test your pedagogical knowledge!</p>
+            <!-- Score display is simplified -->
+            <div id="score-display" class="text-xl font-semibold text-indigo-600 mt-4">Score: 0</div>
+        </header>
 
-            <!-- Perfil (Foto e Título Simples) - AJUSTADO PARA -mt-12 e mb-4 (REDUZIDO) --><div class="flex flex-col items-center mb-4 -mt-12 relative z-10"> 
-                <img 
-                    src="https://res.cloudinary.com/dqfi22uz0/image/upload/v1749349751/DBB440C2-684E-4DCF-9CD3-B2DDC18F1E53_3_vgocga.jpg" 
-                    alt="Foto de Perfil SLAF" 
-                    class="w-28 h-28 rounded-full object-cover mb-2" /* Borda removida */
-                    onerror="this.src='https://placehold.co/120x120/F1D24B/8671d1?text=SLAP'"
-                >
-                <!-- TÍTULO ALTERADO E MARGEM REDUZIDA PARA mb-2 --><h1 class="text-xl font-extrabold text-gray-50 mb-2">LINKS DO SLAP</h1>
-            </div>
-
-            <!-- BOTOES (Redes Sociais) - mb-6 (REDUZIDO) --><div class="mb-6 text-center">
-                <!-- Texto simplificado para "NOSSAS REDES" --><p class="text-xs font-semibold text-gray-500 mb-4 uppercase tracking-wider">NOSSAS REDES</p>
-                
-                <!-- Apenas os 4 ícones de redes sociais - URLs ATUALIZADAS --><div class="flex justify-center space-x-6 mb-6">
-                    <a href="https://www.instagram.com/slapingles" target="_blank" rel="noopener noreferrer" title="Instagram"><i class="fab fa-instagram social-icon"></i></a>
-                    <a href="https://www.youtube.com/@slapingles" target="_blank" rel="noopener noreferrer" title="YouTube"><i class="fab fa-youtube social-icon"></i></a>
-                    <!-- NOTA: SUBSTITUA 5583999999999 POR SEU NÚMERO COMPLETO (ex: 5511999999999) --><a href="https://wa.me/5583999999999" target="_blank" rel="noopener noreferrer" title="WhatsApp"><i class="fab fa-whatsapp social-icon"></i></a>
-                    <a href="https://www.tiktok.com/@slapingles" target="_blank" rel="noopener noreferrer" title="TikTok"><i class="fab fa-tiktok social-icon"></i></a>
-                </div>
-            </div>
-
-            <!-- LINKS (Botões de Ação Principais) - REESTRUTURADOS PARA 7 ITENS --><div class="">
+        <!-- Timer and Question Area -->
+        <div id="quiz-area" class="space-y-6">
             
-                <!-- NOVO Link 1: Site Oficial --><div class="main-link-container">
-                    <a href="https://www.slapingles.com" class="main-link">Site Oficial SLAP</a>
-                    <span class="tag-cta">ACESSE!</span>
-                </div>
-
-                <!-- Link 2: Descubra seu nível de inglês --><div class="main-link-container">
-                    <a href="https://www.tnslap.com" class="main-link">Qual seu nível de inglês?</a>
-                    <span class="tag-cta">TESTE RÁPIDO</span>
-                </div>
-
-                <!-- Link 3: Agende um teste de nível oral --><div class="main-link-container">
-                    <a href="https://calendly.com/slapingles/tn" class="main-link">Agende um teste de nível oral</a>
-                    <span class="tag-cta">GRÁTIS</span>
-                </div>
-
-                <!-- NOVO Link 4: Nos avalie no google --><div class="main-link-container">
-                    <a href="https://g.page/r/CZdDcLpbtf1DEBM/review" target="_blank" rel="noopener noreferrer" class="main-link">Nos avalie no Google</a>
-                    <span class="tag-cta">5 ESTRELAS</span>
+            <!-- Timer Layout: Linear Progress Bar -->
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <p class="text-sm font-medium text-indigo-600" id="question-counter"></p>
+                    <!-- Timer Text - starts hidden/inactive -->
+                    <div id="timer-text" class="text-2xl font-bold text-gray-800 opacity-0">30s</div>
                 </div>
                 
-                <!-- Link 5: Fale com nosso suporte (whatsapp) --><div class="main-link-container">
-                    <a href="https://wa.me/5583999999999" class="main-link">Fale com nosso suporte</a>
-                    <span class="tag-cta">WHATSAPP</span>
+                <!-- Progress Bar Container - starts inactive -->
+                <div id="progress-bar-container" class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-4 opacity-0">
+                    <div id="progress-bar" class="h-full bg-indigo-600 transition-all duration-100 ease-linear" style="width: 100%;"></div>
                 </div>
-
-                <!-- Link 6: Modalidades e preços --><div class="main-link-container">
-                    <a href="https://www.slapingles.com/planos" class="main-link">Modalidades e preços</a>
-                    <span class="tag-cta">INVESTIMENTO</span>
-                </div>
-
-                <!-- NOVO Link 7: Depoimentos de alunos --><div class="main-link-container">
-                    <a href="www.slapingles.com/depoimentos" class="main-link">Depoimentos de alunos</a>
-                    <span class="tag-cta">VEJA TUDO</span>
-                </div>
+                
+                <p class="text-2xl font-semibold text-gray-800" id="question-text">Loading question...</p>
             </div>
+            <!-- End Timer Layout -->
             
+            <div id="interaction-bar" class="flex justify-between items-center border-b border-gray-200 pb-4">
+                <p id="message-box" class="text-sm font-medium text-gray-600"></p>
+                
+                <!-- Reveal Button (only for MCQ) -->
+                <button id="reveal-button" class="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition border border-gray-200 hidden">
+                    <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye text-gray-600"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <span id="reveal-text" class="text-sm font-semibold text-gray-700 hidden sm:inline">Reveal Answers</span>
+                </button>
+            </div>
+
+            <!-- Answer Options (MCQ) or Answer Input Area (Open) -->
+            <div id="options-container" class="space-y-3 opacity-0 transition-opacity duration-300">
+                <!-- Buttons/Input will be injected here -->
+            </div>
+
+            <!-- Action Button -->
+            <div class="pt-6 border-t border-gray-200">
+                <button id="action-button" class="w-full py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300">
+                    Start Quiz
+                </button>
+            </div>
+
         </div>
-        
-        <!-- FOOTER VAZIO (Recrutamento removido) -->
-        <footer class="w-full text-center mt-6 pb-8">
-            <!-- Botão de recrutamento removido -->
-        </footer>
+
+        <!-- Final Score Screen -->
+        <div id="final-screen" class="text-center hidden p-8">
+            <h2 class="text-3xl font-bold text-indigo-600 mb-4">Quiz Finished!</h2>
+            <p class="text-xl text-gray-700 mb-6">Your final score is:</p>
+            <p id="final-score-display" class="text-5xl font-extrabold text-green-600 mb-8"></p>
+            <button onclick="resetQuiz()" class="py-3 px-8 bg-gray-800 text-white font-bold rounded-lg shadow-lg hover:bg-gray-900 transition duration-300">
+                Play Again
+            </button>
+        </div>
     </div>
 
-    <!-- CÓDIGO DO MODAL DE RECRUTAMENTO REMOVIDO -->
-
     <script>
-        // --- LÓGICA DO CARROSSEL DE IMAGENS NA HEADER ---
-        let currentSlideIndex = 0;
-        let carouselInterval;
-        
-        // ARRAY DE IMAGENS ATUALIZADO COM SEUS LINKS
-        const headerImages = [
-            "https://res.cloudinary.com/dqfi22uz0/image/upload/v1760670585/IMG_7663_yfpwfs.jpg",
-            "https://res.cloudinary.com/dqfi22uz0/image/upload/v1760670585/IMG_7401_2_jgvq2o.jpg",
-            "https://res.cloudinary.com/dqfi22uz0/image/upload/v1760670585/Co%CC%81pia_de_20032025-IMG_9769_1_2_r5tvjt.jpg",
-            "https://res.cloudinary.com/dqfi22uz0/image/upload/v1760670585/21032025-IMG_0490_zt2hmz.jpg",
-            "https://res.cloudinary.com/dqfi22uz0/image/upload/v1760670585/IMG_7663_yfpwfs.jpg" // Repete a primeira para ter 5 slides
+        // Consolidated and structured quiz data based on user input
+        const quizData = [
+            // --- SLAP Method ---
+            {
+                type: 'mcq',
+                question: "The SPARK phase in the SLAP Method primarily aims to:",
+                options: [
+                    { text: "Introduce the target concept through emotionally engaging context rather than explicit explanation.", isCorrect: false, rationale: "The SPARK phase focuses on engagement and emotional safety, not introducing the core concept." },
+                    { text: "Evaluate students’ fluency.", isCorrect: false, rationale: "Fluency is evaluated in the PERFORM phase." },
+                    { text: "Create emotional safety and stimulate engagement by lowering the Affective Filter.", isCorrect: true, rationale: "Correct. Lowering the Affective Filter is the primary emotional goal of the SPARK phase." },
+                    { text: "Reinforce prior knowledge by connecting it to real-world situations.", isCorrect: false, rationale: "This relates more to the Lead-In purpose, but the main aim of SPARK is emotional readiness." }
+                ]
+            },
+            {
+                type: 'mcq',
+                question: "If the teacher moves too quickly from LEARN to PERFORM, without giving time for the APPLY phase, what is the pedagogical risk?",
+                options: [
+                    { text: "Students memorize the content but forget it by the end of the class.", isCorrect: false, rationale: "Memorization issues are typical of lack of practice or relevance." },
+                    { text: "Students feel insecure because they didn’t have enough practice beforehand.", isCorrect: true, rationale: "Correct. APPLY provides the structured practice needed to build confidence before the free production of PERFORM." },
+                    { text: "Students get bored because the class becomes too theoretical.", isCorrect: false, rationale: "Skipping APPLY makes the class less structured, not more theoretical." },
+                    { text: "Students improve fluency but lose grammatical accuracy.", isCorrect: false, rationale: "Skipping APPLY sacrifices both accuracy (practice) and fluency (confidence)." }
+                ]
+            },
+            {
+                type: 'open',
+                question: "The following describes which phase of the SLAP Method? 'It's dynamic and interactive — students use the target language in meaningful ways, usually through communicative tasks or challenges. The teacher provides guidance, but students are encouraged to take risks and use what they’ve just learned in situations.'",
+                answer: "APPLY"
+            },
+            {
+                type: 'mcq',
+                question: "What does the 'Cycle Principle' suggest in the context of the SLAP Method?",
+                options: [
+                    { text: "Each phase depends on the success of the previous one", isCorrect: true, rationale: "Correct. The Cycle Principle emphasizes that each phase builds upon the foundation laid by the one before it." },
+                    { text: "Phases can occur in different orders, depending on context", isCorrect: false, rationale: "The phases must be followed in order (SPARK, LEARN, APPLY, PERFORM)." },
+                    { text: "The PERFORM phase is the most important one", isCorrect: false, rationale: "All phases are equally important for overall acquisition." },
+                    { text: "The order of the phases should change from time to time to guarantee students' engagement", isCorrect: false, rationale: "The phases should not change order." }
+                ]
+            },
+            {
+                type: 'mcq',
+                question: "A teacher uses pair work with short dialogues but constantly interrupts to correct mistakes. The teacher claims this was the APPLY phase. Based on SLAP, is this accurate?",
+                options: [
+                    { text: "Yes — because students are already using the new language in interaction.", isCorrect: false, rationale: "Interaction is not the sole factor." },
+                    { text: "No — because heavy correction and focus on accuracy indicate the activity still belongs to LEARN.", isCorrect: true, rationale: "Correct. Although APPLY focuses on accuracy, constant interruption during speaking activity transforms it into a highly controlled drill, characteristic of LEARN or highly controlled practice." },
+                    { text: "Yes — because Apply focus on accuracy, so correction on-the-spot is kind of necessary.", isCorrect: false, rationale: "Correction is necessary, but constant interruption still undermines the 'practice' flow." },
+                    { text: "No — because Apply must be completely free communication with no teacher intervention.", isCorrect: false, rationale: "APPLY requires teacher guidance and intervention." }
+                ]
+            },
+            {
+                type: 'mcq',
+                question: "Which correction approach is most appropriate during the PERFORM phase to preserve students’ confidence?",
+                options: [
+                    { text: "Immediate on-the-spot correction, to maintain accuracy", isCorrect: false, rationale: "This increases the Affective Filter and hurts fluency." },
+                    { text: "Peer correction during the activity to keep the students engaged", isCorrect: false, rationale: "This can still be distracting and disrupt flow." },
+                    { text: "Recasting while students speak, to keep the Affective Filter low", isCorrect: false, rationale: "Recasting is best for less formal correction, but delayed correction is preferred for pure fluency." },
+                    { text: "Delayed correction after task completion", isCorrect: true, rationale: "Correct. This preserves fluency and maintains a low Affective Filter during the production stage." }
+                ]
+            },
+            {
+                type: 'open',
+                question: "While Learn focuses on FORM and structure, Apply focuses on practice and accuracy, transforming knowledge into confident use.",
+                answer: "FORM"
+            },
+            {
+                type: 'open',
+                question: "While Spark focuses on engagement, Perform focuses on ____, connecting emotional motivation to real communication.",
+                answer: "FLUENCY"
+            },
+            // --- TTT vs. STT ---
+            {
+                type: 'mcq',
+                question: "A teacher reduces TTT drastically to maximize STT, but students start producing language full of mistakes. According to communicative balance, what’s the real problem here?",
+                options: [
+                    { text: "STT was too high, and students felt overconfident.", isCorrect: false, rationale: "Confidence issues are less likely to lead to errors than lack of input." },
+                    { text: "The teacher reduced TTT without offering enough input or modeling.", isCorrect: true, rationale: "Correct. Reducing TTT without sufficient modeling (meaningful TTT) means students lack the necessary input for successful STT." },
+                    { text: "The tasks were too easy for their level, and students increased their Affective Filter.", isCorrect: false, rationale: "Easy tasks reduce the Affective Filter." },
+                    { text: "The teacher corrected too much during STT, immediately activating the Monitor.", isCorrect: false, rationale: "The text states the problem is 'full of mistakes', suggesting lack of input, not over-correction." }
+                ]
+            },
+            {
+                type: 'mcq',
+                question: "Teacher John and Teacher Anne have the same STT:TTT ratio (70:30). John’s students are hesitant, while Anne’s are confident and fluent. What best explains the difference?",
+                options: [
+                    { text: "John probably speaks too fast, while Anne speaks more slowly.", isCorrect: false, rationale: "Speaking speed is a secondary factor." },
+                    { text: "Anne’s TTT is more meaningful.", isCorrect: true, rationale: "Correct. Quality of teacher talk (meaningful input and modeling) matters more than the quantity of silence." },
+                    { text: "John corrects too little, and Anne corrects all mistakes immediately.", isCorrect: false, rationale: "Immediate correction hurts fluency." },
+                    { text: "Anne’s students have better pronunciation, which automatically increases fluency.", isCorrect: false, rationale: "Pronunciation is a factor, but the quality of TTT is the pedagogical difference." }
+                ]
+            },
+            {
+                type: 'mcq',
+                question: "Teacher Lisa wants to increase STT by using open-ended questions, but her students still respond with simple answers. What’s the most likely issue?",
+                options: [
+                    { text: "The questions are too difficult for their level.", isCorrect: false, rationale: "If they were too difficult, they'd likely answer 'I don't know'." },
+                    { text: "The students don’t have enough wait time to process and answer.", isCorrect: false, rationale: "Wait time is a factor, but not the most likely issue for recurring simple answers." },
+                    { text: "Lisa’s TTT is still too high during instructions, leaving no room for student initiative.", isCorrect: false, rationale: "This doesn't directly explain the lack of communication." },
+                    { text: "The questions are not genuinely communicative.", isCorrect: true, rationale: "Correct. If questions can be answered with 'yes/no' or single words, they lack communicative purpose, hindering meaningful STT." }
+                ]
+            },
+            {
+                type: 'mcq',
+                question: "During pair work, Teacher Mike notices that one dominant student keeps talking. Which strategy would increase meaningful STT?",
+                options: [
+                    { text: "Split pairs again and give everyone the same topic.", isCorrect: false, rationale: "This doesn't address the dominance issue." },
+                    { text: "Use roles or timed turns to balance participation.", isCorrect: true, rationale: "Correct. These techniques ensure equal opportunity for speaking among students." },
+                    { text: "Correct the dominant student’s mistakes more often.", isCorrect: false, rationale: "This increases TTT and only addresses errors, not participation balance." },
+                    { text: "Give the same question to the whole class at once.", isCorrect: false, rationale: "This reduces individual STT opportunities." }
+                ]
+            },
+            {
+                type: 'open',
+                question: "Not all teacher talk is bad — the key is to make ____ TTT that provides input and modeling.",
+                answer: "MEANINGFUL"
+            },
+            {
+                type: 'open',
+                question: "The balance between TTT and STT depends not on quantity, but on the ____ of interaction.",
+                answer: "QUALITY"
+            },
+            {
+                type: 'mcq',
+                question: "A teacher notices students are increasingly passive despite covering a large amount of material. According to SLAP’s TTT/STT approach, what is the most likely cause?",
+                options: [
+                    { text: "The teacher is using too many open-ended prompts that overwhelm beginners.", isCorrect: false, rationale: "Passivity usually results from lack of opportunity or confidence." },
+                    { text: "The teacher’s excessive explanations and modeling are limiting student production.", isCorrect: true, rationale: "Correct. High, non-meaningful TTT reduces STT opportunity, leading to passivity." },
+                    { text: "The students are not yet confident enough to speak without written prompts.", isCorrect: false, rationale: "This is a consequence, not the cause (which is TTT control)." },
+                    { text: "The teacher is underusing correction techniques in the PERFORM phase.", isCorrect: false, rationale: "Correction in PERFORM is supposed to be minimal to preserve fluency." }
+                ]
+            },
+            {
+                type: 'mcq',
+                question: "During the PERFORM phase, the instructor keeps interrupting students to correct errors. Which best describes the pedagogical issue here in terms of TTT/STT balance?",
+                options: [
+                    { text: "The instructor is prioritizing accuracy control which is the goal of on-the-spot correction during APPLY and PERFORM phases.", isCorrect: false, rationale: "Accuracy control should not interrupt flow during PERFORM." },
+                    { text: "The instructor is maximizing STT through real-time interaction.", isCorrect: false, rationale: "Interruptions decrease STT." },
+                    { text: "The instructor’s interventions increase TTT.", isCorrect: true, rationale: "Correct. Each interruption is teacher talk and disrupts the student talk time flow." },
+                    { text: "The instructor is appropriately scaffolding speech using immediate feedback.", isCorrect: false, rationale: "Immediate feedback is inappropriate for the fluency-focused PERFORM phase." }
+                ]
+            },
+            // --- WARM-UP VS LEAD IN ---
+            {
+                type: 'mcq',
+                question: "A teacher shows a funny meme unrelated to the topic, discusses it, then asks, “How might this idea connect to today’s topic?”. Which SPARK strategy is being used?",
+                options: [
+                    { text: "Lead-In, but the strategy is not being applied correctly.", isCorrect: true, rationale: "Correct. A Lead-In must connect to the lesson topic, but the teacher started with a non-topic-specific warm-up and tried to retroactively force a connection." },
+                    { text: "Warm-Up followed by a Lead-In, engaging curiosity and connecting to the lesson topic.", isCorrect: false, rationale: "It's one strategy (Lead-In) that failed to fulfill its connecting purpose." },
+                    { text: "Warm-Up only.", isCorrect: false, rationale: "The question tried to make a connection, so it was intended as a Lead-In." },
+                    { text: "Lead-In only, skipping the warm-up.", isCorrect: false, rationale: "The activity itself was a warm-up." }
+                ]
+            },
+            {
+                type: 'mcq',
+                question: "Which statement best explains the critical transition from Lead-In to the LEARN phase?",
+                options: [
+                    { text: "The transition is considered optional and may be implemented only when the specific context of the class makes it necessary.", isCorrect: false, rationale: "The transition is mandatory." },
+                    { text: "The Lead-In should provide a condensed preview of the lesson’s theoretical content to prepare students for the LEARN phase", isCorrect: false, rationale: "The Lead-In should avoid explicit theory." },
+                    { text: "The Lead-In must clearly illustrate the relevance of the upcoming theory, establishing why students need it and validating the content", isCorrect: true, rationale: "Correct. The Lead-In's primary function is to create a 'hook' that justifies the necessity of the theory to be taught in LEARN." },
+                    { text: "The transition should primarily serve as a diagnostic tool to assess prior knowledge before teaching", isCorrect: false, rationale: "Diagnosis is secondary to establishing relevance." }
+                ]
+            },
+            {
+                type: 'mcq',
+                question: "Why is it important to avoid explicit theoretical instruction in the lead-in phase?",
+                options: [
+                    { text: "Because the Lead-In should focus on explaining grammar rules in detail", isCorrect: false, rationale: "Theory belongs to LEARN." },
+                    { text: "Because the Lead-In’s purpose is to spark curiosity and create context, not to teach theory", isCorrect: true, rationale: "Correct. The focus is on contextual use and relevance, reserving theory for the LEARN phase." },
+                    { text: "Because students are not ready to participate in activities at this stage", isCorrect: false, rationale: "Students should be participating emotionally in the Lead-In." },
+                    { text: "Because theoretical instruction should be excluded from the SLAP cycle to maintain a communicative environment", isCorrect: false, rationale: "Theory is necessary in the LEARN phase." }
+                ]
+            },
+            {
+                type: 'mcq',
+                question: "Teacher Nicholas starts class with 'Two Truths and a Lie.' Afterward, he connects it by saying, “Today we’ll learn how to ask better questions!” What did he do successfully in terms of SPARK?",
+                options: [
+                    { text: "He turned a warm-up into a lead-in", isCorrect: true, rationale: "Correct. The activity itself was a general warm-up, but by connecting it to the topic, he successfully transitioned it into a Lead-In." },
+                    { text: "He turned a lead-in into a warm-up", isCorrect: false, rationale: "The order is reversed." },
+                    { text: "He moved directly to Apply", isCorrect: false, rationale: "This activity is for sparking engagement." },
+                    { text: "Connected the activity with the grammar goal", isCorrect: false, rationale: "This is too vague; 'turned a warm-up into a lead-in' describes the specific process." }
+                ]
+            },
+            {
+                type: 'open',
+                question: "The _______ is essential to connect with the upcoming theory, validating the content and creating relevance.",
+                answer: "LEAD-IN"
+            },
+            {
+                type: 'open',
+                question: "While the _______ can be general and non-topic-specific, the _______ must connect clearly to the lesson topic.",
+                answer: "WARM-UP / LEAD-IN"
+            },
+            {
+                type: 'mcq',
+                question: "How is emotional preparation a critical component of the Warm-Up in the SLAP Method?",
+                options: [
+                    { text: "It allows teachers to evaluate students’ mastery of new grammar structures", isCorrect: false, rationale: "Warm-Up is not for evaluation." },
+                    { text: "It ensures students memorize vocabulary before the lesson begins", isCorrect: false, rationale: "Warm-Up is not for memorization." },
+                    { text: "It lowers the Affective Filter, making students more willing to speak and participate", isCorrect: true, rationale: "Correct. The primary goal of Warm-Up is to transition the student into the learning environment and reduce anxiety." },
+                    { text: "It increases the Affective Filter, making students more willing to speak and participate", isCorrect: false, rationale: "Increasing the filter hinders learning." }
+                ]
+            },
+            // --- Practice vs. Production ---
+            {
+                type: 'open',
+                question: "A teacher closely monitors practice dialogues, giving immediate feedback (APPLY). Later, during an open debate, the teacher steps back, only noting errors for later discussion (PERFORM). Which two phases are represented in this sequence?",
+                answer: "APPLY / PERFORM"
+            },
+            {
+                type: 'mcq',
+                question: "In the APPLY phase of the SLAP Method, mistakes are seen as:",
+                options: [
+                    { text: "Signs that the student isn’t ready to move on", isCorrect: false, rationale: "Mistakes are expected in APPLY." },
+                    { text: "Failures that shouldn't be immediately corrected", isCorrect: false, rationale: "Immediate, strategic correction is needed in APPLY." },
+                    { text: "Expected feedback for learning", isCorrect: true, rationale: "Correct. Mistakes in APPLY provide valuable diagnostic feedback to guide further practice." },
+                    { text: "Evidence that the instruction was ineffective", isCorrect: false, rationale: "This is a negative perspective; mistakes are part of the process." }
+                ]
+            },
+            {
+                type: 'mcq',
+                question: "In the transition from APPLY to PERFORM, what must the teacher primarily adjust?",
+                options: [
+                    { text: "The level of grammatical complexity in tasks", isCorrect: false, rationale: "Complexity should be similar, but focus changes." },
+                    { text: "The students’ exposure to new vocabulary", isCorrect: false, rationale: "New vocab belongs in LEARN." },
+                    { text: "Their intervention strategy and level of control", isCorrect: true, rationale: "Correct. The teacher must transition from high control/immediate correction (APPLY) to low control/delayed correction (PERFORM)." },
+                    { text: "The time allocated to warm-up activities", isCorrect: false, rationale: "Warm-up is separate." }
+                ]
+            },
+            {
+                type: 'mcq',
+                question: "During the PERFORM phase, the teacher’s role should be:",
+                options: [
+                    { text: "To correct errors immediately to reinforce form", isCorrect: false, rationale: "Immediate correction hurts fluency." },
+                    { text: "To lead structured, accuracy-based drills", isCorrect: false, rationale: "This is the APPLY phase." },
+                    { text: "To act as a mediator and observer, avoiding interruptions", isCorrect: true, rationale: "Correct. The focus is on fluency and self-correction, so the teacher must step back." },
+                    { text: "To introduce new theoretical content for reflection", isCorrect: false, rationale: "Theory introduction is LEARN." }
+                ]
+            },
+            {
+                type: 'mcq',
+                question: "A teacher consistently corrects every mistake during a debate activity in PERFORM. According to the SLAP Method, what is the consequence of this?",
+                options: [
+                    { text: "It enhances student confidence and autonomy", isCorrect: false, rationale: "It does the opposite." },
+                    { text: "It disrupts fluency and raises the Affective Filter", isCorrect: true, rationale: "Correct. Interruptions break the flow of production and increase anxiety." },
+                    { text: "It improves grammatical precision without negative impact", isCorrect: false, rationale: "The impact is always negative in a fluency activity." },
+                    { text: "It transforms the activity into guided practice effectively", isCorrect: false, rationale: "It merely disrupts the PERFORM phase, it doesn't transform it into a productive APPLY phase." }
+                ]
+            },
+            {
+                type: 'mcq',
+                question: "Which of the following best describes the main goal of the APPLY phase?",
+                options: [
+                    { text: "Promote spontaneous and authentic speech", isCorrect: false, rationale: "This is the goal of PERFORM." },
+                    { text: "Strengthen accuracy and confidence through structured practice", isCorrect: true, rationale: "Correct. APPLY is the bridge between theoretical knowledge and free use." },
+                    { text: "Measure fluency under real-life conditions", isCorrect: false, rationale: "This is the goal of PERFORM." },
+                    { text: "Eliminate teacher intervention to simulate natural communication", isCorrect: false, rationale: "Teacher intervention is required for guided practice." }
+                ]
+            },
+            // --- Rapport ---
+            {
+                type: 'mcq',
+                question: "In the SLAP Method, rapport is essential because it directly influences which factor in language learning?",
+                options: [
+                    { text: "Friendship between the teacher and the student", isCorrect: false, rationale: "Friendship is not the goal." },
+                    { text: "The Affective Filter", isCorrect: true, rationale: "Correct. Good rapport lowers the Affective Filter, increasing willingness to take risks." },
+                    { text: "The TTT/STT ratio", isCorrect: false, rationale: "Rapport influences willingness to speak, but not the mechanical ratio." },
+                    { text: "The student’s grammatical accuracy", isCorrect: false, rationale: "Rapport doesn't directly influence accuracy." }
+                ]
+            },
+            {
+                type: 'open',
+                question: "Good rapport does not require ________, but rather mutual respect and trust between teacher and student.",
+                answer: "FRIENDSHIP"
+            },
+            {
+                type: 'mcq',
+                question: "A teacher believes that being close friends with students automatically enhances learning outcomes. This approach is problematic because:",
+                options: [
+                    { text: "Friendship naturally increases performance anxiety", isCorrect: false, rationale: "Friendship usually reduces performance anxiety." },
+                    { text: "Friendship can blur professional boundaries.", isCorrect: true, rationale: "Correct. Rapport must be built within professional boundaries to maintain authority and objectivity." },
+                    { text: "Rapport and friendship are interchangeable when trust exists", isCorrect: false, rationale: "They are not interchangeable." },
+                    { text: "Friendship improves motivation, so professional distance is unnecessary", isCorrect: false, rationale: "Professional distance is always necessary." }
+                ]
+            },
+            {
+                type: 'open',
+                question: "_______ depends on the instructor’s ability to project both empathy and consistency in their classroom presence, ensuring emotional safety without compromising professional authority.",
+                answer: "RAPPORT"
+            },
+            {
+                type: 'mcq',
+                question: "Durante a communicative activity, a teacher avoids correcting errors to avoid hurting the student’s feelings. Which principle of rapport is being misapplied?",
+                options: [
+                    { text: "Positive climate", isCorrect: false, rationale: "Climate is the overall feeling." },
+                    { text: "Mistake normalization", isCorrect: true, rationale: "Correct. Rapport requires normalizing mistakes as part of learning, not avoiding necessary correction." },
+                    { text: "Personal connection", isCorrect: false, rationale: "Personal connection is about knowing the student." },
+                    { text: "Emotional engagement", isCorrect: false, rationale: "Engagement is about interest." }
+                ]
+            },
+            {
+                type: 'mcq',
+                question: "During a warm-up, a teacher interrupts students repeatedly to correct minor errors. What misapplied rapport issue does this demonstrate?",
+                options: [
+                    { text: "Over-normalization of mistakes", isCorrect: false, rationale: "Correction is the opposite of normalization." },
+                    { text: "Lack of empathy", isCorrect: false, rationale: "Lack of empathy is too general." },
+                    { text: "High correction during emotionally sensitive phases increases anxiety", isCorrect: true, rationale: "Correct. Intervening during a phase meant to lower the Affective Filter immediately raises it." },
+                    { text: "Insufficient personal connection between the student and the teacher", isCorrect: false, rationale: "Connection is separate from correction strategy." }
+                ]
+            },
+            // --- Theories of Krashen ---
+            {
+                type: 'mcq',
+                question: "Which best explains why over-reliance on the Monitor during communicative tasks can hinder language development?",
+                options: [
+                    { text: "It allows students to self-correct minor errors, increasing accuracy without side effects", isCorrect: false, rationale: "There are side effects (reduced fluency)." },
+                    { text: "It improves vocabulary acquisition at the expense of grammar", isCorrect: false, rationale: "Monitor applies to form/grammar." },
+                    { text: "Constant conscious correction limits natural language use", isCorrect: true, rationale: "Correct. The Monitor, being conscious, slows down processing and interferes with fluent, natural communication (Acquisition)." },
+                    { text: "It replaces the need for comprehensible input entirely", isCorrect: false, rationale: "Monitor cannot replace Input." }
+                ]
+            },
+            {
+                type: 'mcq',
+                question: "A teacher notices that some advanced students frequently pause to edit their sentences while speaking freely. Which strategy aligns with Krashen’s Monitor Hypothesis to maximize fluency?",
+                options: [
+                    { text: "Increase immediate correction and drills to perfect their forms", isCorrect: false, rationale: "This encourages Monitor use when it should be minimized." },
+                    { text: "Lower the input level to i+0 so they feel more confident", isCorrect: false, rationale: "This stalls acquisition (Comprehensible Input)." },
+                    { text: "Encourage natural speech flow, reserving the Monitor for delayed correction", isCorrect: true, rationale: "Correct. By delaying correction, the teacher signals that fluency is the goal, discouraging conscious self-monitoring during production." },
+                    { text: "Focus only on accuracy, reducing communicative practice", isCorrect: false, rationale: "Accuracy focus is detrimental to fluency." }
+                ]
+            },
+            {
+                type: 'mcq',
+                question: "During a reading activity, a teacher notices that students understand 80% of the text but struggle with a few new words. If the teacher had made the text much more difficult, what would Krashen predict?",
+                options: [
+                    { text: "Students would learn faster due to challenge", isCorrect: false, rationale: "Only slightly challenging input (i+1) aids acquisition." },
+                    { text: "The input would become noise, blocking acquisition", isCorrect: true, rationale: "Correct. Input that is far beyond the learner's current level (i+2 or more) is incomprehensible and cannot be acquired." },
+                    { text: "Students would rely on the Monitor to self-correct", isCorrect: false, rationale: "Monitor doesn't help with incomprehensible input." },
+                    { text: "Fluency would automatically improve", isCorrect: false, rationale: "Fluency is not directly linked to reading difficulty." }
+                ]
+            },
+            {
+                type: 'open',
+                question: "When language input is _______ (i+0), learning stalls because the learner is not challenged enough to acquire new structures.",
+                answer: "TOO SIMPLE/EASY"
+            },
+            {
+                type: 'open',
+                question: "The SPARK phase is critical for lowering the _______ because it establishes emotional safety, engagement, and curiosity before formal instruction begins.",
+                answer: "AFFECTIVE FILTER"
+            },
+            // --- Correction Techniques ---
+            {
+                type: 'mcq',
+                question: "During a PERFORM activity, a student makes minor errors but continues speaking fluently. The instructor should:",
+                options: [
+                    { text: "Interrupt the student and correct the errors on-the-spot.", isCorrect: false, rationale: "This disrupts fluency and increases the Affective Filter." },
+                    { text: "Ask peers to correct the errors to ensure everyone’s participation.", isCorrect: false, rationale: "This also disrupts fluency." },
+                    { text: "Use Delayed Correction.", isCorrect: true, rationale: "Correct. Delayed correction addresses errors after the activity is complete, preserving the flow of speech." },
+                    { text: "Recast the phrase to ensure grammatical accuracy and fluency.", isCorrect: false, rationale: "Recasting can still be distracting in a high-focus fluency task." }
+                ]
+            },
+            {
+                type: 'open',
+                question: "A student says, 'He go to school yesterday.' The teacher repeats, 'He went to school yesterday,' without stopping the student. This technique is called:",
+                answer: "RECASTING"
+            },
+            {
+                type: 'mcq',
+                question: "Which scenario best illustrates the 'Golden Rule' of correction in SLAP?",
+                options: [
+                    { text: "Correcting every single grammatical mistake in a fluency activity", isCorrect: false, rationale: "This violates the principle of prioritizing fluency." },
+                    { text: "Ignoring errors in the APPLY phase to save time", isCorrect: false, rationale: "Correction is mandatory in APPLY." },
+                    { text: "Identifying errors that are essential for learning while letting non-critical mistakes occur", isCorrect: true, rationale: "Correct. Strategic correction means focusing on fossilization risks and core lesson goals." },
+                    { text: "Mostly using peer correction to avoid teacher intervention", isCorrect: false, rationale: "Peer correction should be balanced with teacher input." }
+                ]
+            },
+            {
+                type: 'mcq',
+                question: "A teacher is planning a lesson. Which correction type matches the most appropriate SLAP phase?",
+                options: [
+                    { text: "On-the-spot Correction → PERFORM / Delayed Correction → APPLY", isCorrect: false, rationale: "The phases are reversed." },
+                    { text: "Peer Correction → LEARN / Written Correction → SPARK", isCorrect: false, rationale: "Correction is inappropriate for SPARK and LEARN." },
+                    { text: "On-the-spot Correction → APPLY / Delayed Correction → PERFORM", isCorrect: true, rationale: "Correct. Accuracy focus in APPLY allows for immediate correction; fluency focus in PERFORM requires delay." },
+                    { text: "Recasting → LEARN / Written Correction → SPARK", isCorrect: false, rationale: "Correction is inappropriate for SPARK." }
+                ]
+            },
+            // --- Listening: Active Skill Mastery ---
+            {
+                type: 'mcq',
+                question: "During a conversation, the student deduces that there may be tension about a decision yet to be made, even though this is not directly stated. Which listening skill is the student using?",
+                options: [
+                    { text: "Listening for Gist", isCorrect: false, rationale: "Gist is about the main idea." },
+                    { text: "Listening for Detail", isCorrect: false, rationale: "Detail is about explicit facts." },
+                    { text: "Listening for Inference", isCorrect: true, rationale: "Correct. Inference involves deducing implied meaning from non-explicit cues." },
+                    { text: "Listening for Opinions and Attitudes", isCorrect: false, rationale: "This focuses on tone and emotion, not deduction of context." }
+                ]
+            },
+            {
+                type: 'mcq',
+                question: "During a political interview, a student identifies sarcasm in the speaker’s voice and realizes the speaker actually opposes the policy being discussed. Which listening type is being demonstrated?",
+                options: [
+                    { text: "Listening for Detail", isCorrect: false, rationale: "Detail is for facts." },
+                    { text: "Listening for Gist", isCorrect: false, rationale: "Gist is for the main topic." },
+                    { text: "Listening for Inference", isCorrect: false, rationale: "Inference focuses on implied content." },
+                    { text: "Listening for Opinions and Attitudes", isCorrect: true, rationale: "Correct. Identifying emotion, tone, and subjective stance falls under Opinions and Attitudes." }
+                ]
+            },
+            {
+                type: 'mcq',
+                question: "A student struggles to understand implied meaning in conversations, but the teacher assigns a Listening for Inference activity without first practicing Gist or Detail. The pedagogical mistake is:",
+                options: [
+                    { text: "Pressuring the student and raising the Affective Filter", isCorrect: false, rationale: "This is a consequence, not the mistake." },
+                    { text: "Assigning a task that is not advanced enough for the student’s current comprehension", isCorrect: false, rationale: "The task is too advanced." },
+                    { text: "Confusing Listening for Detail with Listening for Inference", isCorrect: false, rationale: "The teacher understands the difference." },
+                    { text: "Skipping necessary scaffolding before moving to higher-order inference", isCorrect: true, rationale: "Correct. Higher-order skills like inference must be built on the foundation of Gist and Detail (scaffolding)." }
+                ]
+            },
+            // --- Vygotsky: ZPD and Scaffolding ---
+            {
+                type: 'mcq',
+                question: "A teacher notices that students still rely heavily on sentence models during speaking tasks in the PERFORM phase. What pedagogical mistake might be occurring?",
+                options: [
+                    { text: "Scaffolding was introduced too early in the LEARN phase.", isCorrect: false, rationale: "Scaffolding is necessary early on." },
+                    { text: "Scaffolding was not gradually withdrawn as autonomy developed.", isCorrect: true, rationale: "Correct. Scaffolding must be reduced as the learner moves toward the independent performance goal of the PERFORM phase." },
+                    { text: "Students are overusing peer correction instead of teacher input.", isCorrect: false, rationale: "This is unlikely to cause model reliance." },
+                    { text: "The teacher is providing insufficient modeling during the APPLY phase.", isCorrect: false, rationale: "Insufficient modeling causes errors, not reliance on old models." }
+                ]
+            },
+            {
+                type: 'open',
+                question: "The Zone of Proximal Development represents the distance between what a learner can do independently and what they can achieve with ________.",
+                answer: "TEMPORARY GUIDANCE/SUPPORT"
+            },
+            {
+                type: 'mcq',
+                question: "According to Vygotsky’s ZPD, optimal learning occurs when the instructor…",
+                options: [
+                    { text: "Minimizes all teacher intervention so the learner can construct meaning independently.", isCorrect: false, rationale: "Minimizing all intervention ignores ZPD." },
+                    { text: "Provides continuous correction and modeling to prevent fossilization of errors.", isCorrect: false, rationale: "Continuous correction prevents autonomy." },
+                    { text: "Offers temporary, responsive support that bridges the learner’s current competence and the target skill.", isCorrect: true, rationale: "Correct. Scaffolding is, by definition, temporary support within the ZPD (i+1)." },
+                    { text: "Encourages peer collaboration, reducing teacher guidance from the process.", isCorrect: false, rationale: "Teacher guidance is critical." }
+                ]
+            },
+            {
+                type: 'mcq',
+                question: "In the SLAP framework, the gradual withdrawal of scaffolding should align most closely with which transition?",
+                options: [
+                    { text: "From PERFORM to EVALUATE", isCorrect: false, rationale: "This is too late." },
+                    { text: "From LEARN to APPLY", isCorrect: false, rationale: "Scaffolding is just starting." },
+                    { text: "From APPLY to PERFORM", isCorrect: true, rationale: "Correct. PERFORM is the independent production phase, so scaffolding must be withdrawn during the transition from the guided APPLY phase." },
+                    { text: "From OBSERVE to FEEDBACK", isCorrect: false, rationale: "This is not a SLAP phase." }
+                ]
+            },
+            {
+                type: 'open',
+                question: "In the SLAP method, _________ refers to the temporary, strategic support that allows the student to operate at the level of i+1, slightly beyond their current competence.",
+                answer: "SCAFFOLDING"
+            }
         ];
 
-        const carouselContainer = document.getElementById('header-carousel');
+        // --- Global State ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timerInterval;
+        let timeLeft = 30;
+        let gameActive = false; // Controls if the user can interact (e.g., click options)
+        let timerRunning = false; // Controls the timer state specifically
+        let selectedOption = null;
+        let answersRevealed = false;
 
-        function initCarousel() {
-            if (!carouselContainer) return;
+        // --- DOM Elements ---
+        const $quizArea = document.getElementById('quiz-area');
+        const $finalScreen = document.getElementById('final-screen');
+        const $scoreDisplay = document.getElementById('score-display');
+        const $questionCounter = document.getElementById('question-counter');
+        const $questionText = document.getElementById('question-text');
+        
+        // Timer elements updated for linear bar
+        const $timerText = document.getElementById('timer-text');
+        const $progressBar = document.getElementById('progress-bar');
+        const $progressBarContainer = document.getElementById('progress-bar-container'); 
+        
+        const $optionsContainer = document.getElementById('options-container');
+        const $actionButton = document.getElementById('action-button');
+        const $messageBox = document.getElementById('message-box');
+        const $revealButton = document.getElementById('reveal-button');
+        const $revealText = document.getElementById('reveal-text');
+        const $eyeIcon = document.getElementById('eye-icon');
 
-            // 1. Injeta todas as imagens no contêiner
-            headerImages.forEach((src, index) => {
-                const img = document.createElement('img');
-                img.src = src;
-                img.alt = `SLAP Header Image ${index + 1}`;
-                img.className = 'carousel-slide header-image';
+        const TIMER_MAX = 30;
+
+        // --- Utility Functions ---
+
+        /**
+         * Generates a short, low-frequency buzzing sound using the Web Audio API.
+         */
+        function playBuzz() {
+            // Use window.AudioContext for maximum compatibility
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return; 
+
+            try {
+                const audioCtx = new AudioContext();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                // Set a low, buzzing frequency (e.g., 100Hz)
+                oscillator.frequency.setValueAtTime(100, audioCtx.currentTime); 
+                // Set volume
+                gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+
+                // Start buzzing
+                oscillator.start();
                 
-                if (index === 0) {
-                    img.classList.add('active');
+                // Stop buzzing after 200ms
+                oscillator.stop(audioCtx.currentTime + 0.2); 
+            } catch (e) {
+                console.error("Audio playback failed:", e);
+                // Fail silently if audio API is not available/blocked
+            }
+        }
+        
+        /**
+         * Fisher-Yates shuffle algorithm to randomize the array order.
+         * @param {Array} array - The array to shuffle.
+         */
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // --- Timer Functions ---
+
+        /**
+         * Updates the timer display (text and progress bar).
+         */
+        function updateTimerDisplay() {
+            $timerText.textContent = `${timeLeft}s`;
+            const percentage = (timeLeft / TIMER_MAX) * 100;
+            
+            // Update progress bar width
+            $progressBar.style.width = `${percentage}%`;
+
+            if (timeLeft <= 10) {
+                $timerText.classList.add('text-red-500');
+                $progressBar.classList.remove('bg-indigo-600');
+                $progressBar.classList.add('bg-red-500');
+            } else {
+                $timerText.classList.remove('text-red-500');
+                $progressBar.classList.remove('bg-red-500');
+                $progressBar.classList.add('bg-indigo-600');
+            }
+        }
+
+        /**
+         * Starts the 30-second countdown.
+         */
+        function startTimer() {
+            if (timerRunning) return; 
+            
+            timerRunning = true;
+            $timerText.classList.remove('opacity-0');
+            $progressBarContainer.classList.remove('opacity-0');
+
+            clearInterval(timerInterval);
+            timeLeft = TIMER_MAX;
+            updateTimerDisplay();
+            
+            const questionType = quizData[currentQuestionIndex].type;
+
+            if (questionType === 'mcq') {
+                 // For MCQ, timer start is coupled with revealing options
+                 gameActive = true;
+                 $optionsContainer.classList.add('opacity-100');
+                 $optionsContainer.classList.remove('opacity-0');
+                 $actionButton.disabled = true; // Submit only enabled on selection
+                 $actionButton.textContent = "Submit Answer";
+            } else if (questionType === 'open') {
+                // For open questions, timer start is coupled with enabling Next Question
+                $actionButton.textContent = "Next Question";
+                $actionButton.disabled = false;
+                $actionButton.onclick = handleTimeOut; 
+            }
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+
+                // 🌟 BUZZ LOGIC: Play sound on the last 10 seconds (10, 9, 8, ..., 1)
+                if (timeLeft > 0 && timeLeft <= 10) {
+                    playBuzz();
                 }
-                carouselContainer.appendChild(img);
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeOut();
+                }
+            }, 1000);
+        }
+
+        /**
+         * Handles the case when the timer runs out or 'Next Question' is manually clicked for open questions.
+         */
+        function handleTimeOut() {
+            if (!timerRunning) return; 
+            clearInterval(timerInterval);
+            timerRunning = false;
+            gameActive = false; 
+
+            const question = quizData[currentQuestionIndex];
+
+            if (question.type === 'mcq') {
+                 $messageBox.textContent = timeLeft <= 0 ? 
+                    "Time's up! No answer submitted." : 
+                    "Answer submitted.";
+                
+                // If timed out without selecting, treat as null submission
+                const selectedIndex = timeLeft <= 0 && selectedOption === null ? null : selectedOption;
+                processMCQSubmission(selectedIndex);
+
+            } else if (question.type === 'open') {
+                // For open questions, we display the expected answer for teacher reference
+                const $openAnswerDisplay = document.getElementById('open-answer-display');
+                
+                $messageBox.textContent = timeLeft <= 0 ? 
+                    "Time's up! Time expired for this question." : 
+                    "Time completed. Moving to the next question.";
+                
+                // Show the official answer
+                if ($openAnswerDisplay) {
+                    // Update styling and show answer
+                    $openAnswerDisplay.textContent = `Expected Answer: ${question.answer}`;
+                    $openAnswerDisplay.classList.remove('hidden', 'border-gray-300');
+                    $openAnswerDisplay.classList.add('bg-indigo-50', 'text-indigo-700', 'border-indigo-400', 'shadow-inner');
+                }
+                
+                // Re-enable button and change to Next Question
+                $actionButton.textContent = "Next Question";
+                $actionButton.disabled = false;
+                $actionButton.onclick = nextQuestion;
+
+                updateScoreDisplay(); 
+            }
+            
+            // Hide the reveal button if visible
+            $revealButton.classList.add('hidden');
+        }
+
+        /**
+         * Processes score and feedback for MCQ submissions.
+         */
+        function processMCQSubmission(selectedIndex) {
+            const question = quizData[currentQuestionIndex];
+            const options = document.querySelectorAll('.option-button');
+
+            const isCorrect = selectedIndex !== null && question.options[selectedIndex].isCorrect;
+            
+            if (isCorrect) {
+                score++;
+                $messageBox.textContent = "Correct! Well done.";
+            } else if (selectedIndex !== null) {
+                const rationale = question.options[selectedIndex].rationale;
+                $messageBox.textContent = `Incorrect. ${rationale}`;
+            } else {
+                 $messageBox.textContent = "No answer selected. You ran out of time.";
+            }
+
+            // Reveal correct/incorrect highlights
+            options.forEach((btn, index) => {
+                const optionData = question.options[index];
+                btn.disabled = true;
+                if (optionData.isCorrect) {
+                    btn.classList.add('correct');
+                } else if (index === selectedOption) {
+                    btn.classList.add('incorrect');
+                }
+                btn.classList.remove('selected', 'border-gray-300');
+            });
+            
+            updateScoreDisplay(); 
+
+            // Change button to Next Question
+            $actionButton.textContent = "Next Question";
+            $actionButton.disabled = false;
+            $actionButton.onclick = nextQuestion;
+        }
+
+        // --- Quiz Core Logic ---
+
+        /**
+         * Loads the current question into the UI based on its type.
+         */
+        function loadQuestion() {
+            if (currentQuestionIndex >= quizData.length) {
+                showFinalScreen();
+                return;
+            }
+
+            const question = quizData[currentQuestionIndex];
+            
+            // Reset state
+            selectedOption = null;
+            answersRevealed = false;
+            gameActive = false; 
+            timerRunning = false;
+            $messageBox.textContent = "";
+            $optionsContainer.innerHTML = '';
+            $optionsContainer.classList.remove('opacity-100');
+            $optionsContainer.classList.add('opacity-0'); 
+            $timerText.classList.add('opacity-0');
+            $progressBarContainer.classList.add('opacity-0');
+            $revealButton.classList.add('hidden');
+
+            // Update UI
+            $questionCounter.textContent = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
+            $questionText.textContent = question.question;
+
+            if (question.type === 'mcq') {
+                // Setup for Multiple Choice Questions (Timer starts on Reveal)
+                $revealButton.classList.remove('hidden');
+                $actionButton.textContent = "Submit Answer";
+                $actionButton.disabled = true;
+                $actionButton.onclick = () => processMCQSubmission(selectedOption);
+
+                // Create option buttons (still hidden by $optionsContainer opacity)
+                question.options.forEach((option, index) => {
+                    const letter = String.fromCharCode(65 + index); // A, B, C, D...
+                    const button = document.createElement('button');
+                    button.classList.add('option-button', 'w-full', 'p-4', 'text-left', 'rounded-lg', 'font-medium', 'text-gray-700');
+                    
+                    // Add letter prefix A), B), C), D)
+                    button.textContent = `${letter}) ${option.text}`; 
+                    
+                    button.dataset.index = index;
+                    button.onclick = () => selectOption(button, index);
+                    $optionsContainer.appendChild(button);
+                });
+
+                // Reset reveal button visual state
+                $revealButton.onclick = toggleAnswerVisibility;
+                $revealButton.classList.remove('bg-indigo-100', 'hover:bg-indigo-200', 'border-indigo-300');
+                $revealButton.classList.add('bg-gray-50', 'hover:bg-gray-100', 'border-gray-200');
+                $revealText.textContent = "Reveal Answers";
+                $eyeIcon.innerHTML = '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>';
+                
+            } else if (question.type === 'open') {
+                // Setup for Open Questions (Timer starts on button click)
+                $actionButton.textContent = "Start Timer";
+                $actionButton.disabled = false;
+                $actionButton.onclick = startTimer; 
+
+                // Create only the answer display placeholder (for revealing later)
+                const answerDisplay = document.createElement('p');
+                // Added extra styling for visibility when revealed
+                answerDisplay.classList.add('mt-2', 'text-xl', 'text-gray-700', 'font-semibold', 'hidden', 'text-center', 'py-4', 'border', 'border-gray-300', 'rounded-lg', 'bg-gray-50'); 
+                answerDisplay.id = 'open-answer-display';
+                answerDisplay.textContent = 'Concentrate and recall the answer!'; // Message visible before reveal
+
+                $optionsContainer.appendChild(answerDisplay);
+                $optionsContainer.classList.remove('opacity-0');
+                $optionsContainer.classList.add('opacity-100');
+            }
+        }
+
+
+        /**
+         * Handles the selection of an answer option (MCQ only).
+         */
+        function selectOption(button, index) {
+            if (!gameActive) return;
+
+            document.querySelectorAll('.option-button').forEach(btn => {
+                btn.classList.remove('selected', 'bg-blue-50', 'border-blue-500');
+                btn.classList.add('border-gray-300'); 
             });
 
-            // 2. Inicia a função de troca automática (a cada 5 segundos)
-            carouselInterval = setInterval(showNextSlide, 5000); 
+            button.classList.add('selected');
+            button.classList.remove('border-gray-300');
+            
+            selectedOption = index;
+            $actionButton.disabled = false;
+            $actionButton.textContent = "Submit Answer";
         }
-
-        function showNextSlide() {
-            const slides = document.querySelectorAll('.carousel-slide');
-            if (slides.length === 0) return;
-
-            // Esconde o slide atual
-            slides[currentSlideIndex].classList.remove('active');
-
-            // Calcula o próximo índice
-            currentSlideIndex = (currentSlideIndex + 1) % slides.length;
-
-            // Mostra o próximo slide
-            slides[currentSlideIndex].classList.add('active');
-        }
-
-        // --- FUNÇÕES DO MODAL E FORMULÁRIO (REMOVIDAS) ---
-        // Funções openModal, closeModal e handleFormSubmit foram removidas
-
         
-        // Inicializa o carrossel após o carregamento do DOM
-        initCarousel();
+        /**
+         * Moves to the next question.
+         */
+        function nextQuestion() {
+            currentQuestionIndex++;
+            $actionButton.onclick = startQuiz; // Reset button action for next question
+            loadQuestion();
+        }
+
+        /**
+         * Updates the score shown in the header.
+         */
+        function updateScoreDisplay() {
+            const totalAnswered = (currentQuestionIndex + (gameActive || timerRunning ? 0 : 1));
+
+            if (timerRunning) {
+                $scoreDisplay.textContent = `Score: ${score}`;
+            } else if (currentQuestionIndex === 0 && !gameActive) {
+                $scoreDisplay.textContent = `Score: 0`;
+            } else {
+                 $scoreDisplay.textContent = `Score: ${score} / ${totalAnswered}`;
+            }
+        }
+
+        /**
+         * Shows the final score screen.
+         */
+        function showFinalScreen() {
+            clearInterval(timerInterval);
+            $quizArea.classList.add('hidden');
+            $finalScreen.classList.remove('hidden');
+            const finalScoreText = `${score} out of ${quizData.length}`;
+            $finalScoreDisplay.textContent = finalScoreText;
+        }
+
+        // --- Custom Functionality ---
+        
+        /**
+         * Toggles the visibility of the answer options AND starts the timer (MCQ only).
+         */
+        function toggleAnswerVisibility() {
+            if (timerRunning) return; 
+
+            answersRevealed = !answersRevealed;
+            if (answersRevealed) {
+                // Start timer immediately upon revealing answers
+                startTimer();
+
+                $revealText.textContent = "Hide Answers";
+                $revealButton.classList.remove('bg-gray-50', 'hover:bg-gray-100', 'border-gray-200');
+                $revealButton.classList.add('bg-indigo-100', 'hover:bg-indigo-200', 'border-indigo-300');
+                // Icon for EyeOff
+                $eyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-10-7-10-7a1.17 1.17 0 0 1 1.66-1.66M20 11.23a10.07 10.07 0 0 0-3.72-2.36M12 19c.79 0 1.57-.21 2.3-.61M21 17.72c-2.45 2.72-7.44 5.28-14.88 1.4M1.66 1.66 22.34 22.34"/>';
+            } else {
+                // Should not happen during active MCQ play
+                $optionsContainer.classList.remove('opacity-100');
+                $optionsContainer.classList.add('opacity-0');
+                $revealText.textContent = "Reveal Answers";
+                $revealButton.classList.remove('bg-indigo-100', 'hover:bg-indigo-200', 'border-indigo-300');
+                $revealButton.classList.add('bg-gray-50', 'hover:bg-gray-100', 'border-gray-200');
+                // Icon for Eye
+                $eyeIcon.innerHTML = '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>';
+            }
+        }
+
+        // --- Initialization ---
+        
+        /**
+         * Resets the quiz state and starts the game.
+         */
+        function resetQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            gameActive = false;
+            timerRunning = false;
+            
+            // Shuffle questions for random order
+            shuffleArray(quizData); 
+            
+            $quizArea.classList.remove('hidden');
+            $finalScreen.classList.add('hidden');
+            $actionButton.textContent = "Start Quiz";
+            $actionButton.onclick = startQuiz;
+            $questionCounter.textContent = `Question 1 of ${quizData.length}`;
+            $questionText.textContent = "Press 'Start Quiz' to begin the competition!";
+            $optionsContainer.innerHTML = '';
+            $optionsContainer.classList.remove('opacity-100');
+            $optionsContainer.classList.add('opacity-0');
+            $revealButton.classList.add('hidden');
+            $timerText.classList.add('opacity-0');
+            $progressBarContainer.classList.add('opacity-0');
+            updateScoreDisplay();
+        }
+
+        function startQuiz() {
+             gameActive = false; // Reset gameActive until timer starts
+             loadQuestion();
+        }
+
+        // Start the quiz on load
+        window.onload = resetQuiz;
+
     </script>
 </body>
 </html>
