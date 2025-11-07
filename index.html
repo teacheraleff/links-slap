@@ -51,7 +51,7 @@
         <h2 class="text-3xl font-bold text-gray-800 mb-4">Challenge Login</h2>
         <p class="text-gray-500 mb-6">Enter the access code to start the competition.</p>
         
-        <input type="password" id="password-input" placeholder="Password"
+        <input type="password" id="password-input" placeholder="Password (12345)"
                class="w-full p-3 mb-4 border border-gray-300 rounded-lg text-lg focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition"
                onkeypress="if(event.key === 'Enter') checkPassword()">
 
@@ -81,7 +81,7 @@
                 <div class="flex justify-between items-center">
                     <p class="text-sm font-medium text-indigo-600" id="question-counter"></p>
                     <!-- Timer Text - starts hidden/inactive -->
-                    <div id="timer-text" class="text-2xl font-bold text-gray-800 opacity-0">30s</div>
+                    <div id="timer-text" class="text-2xl font-bold text-gray-800 opacity-0">40s</div>
                 </div>
                 
                 <!-- Progress Bar Container - starts inactive -->
@@ -591,13 +591,13 @@
         let currentQuestionIndex = 0;
         let score = 0;
         let timerInterval;
-        let timeLeft = 30;
+        let timeLeft = 40; // Updated initial value
         let gameActive = false; // Controls if the user can interact (e.g., click options)
         let timerRunning = false; // Controls the timer state specifically
         let selectedOption = null;
         let answersRevealed = false;
         
-        // 🌟 NEW: Password Constant
+        // 🌟 Password Constant
         const CORRECT_PASSWORD = '12345';
 
         // --- DOM Elements ---
@@ -623,7 +623,7 @@
         const $revealText = document.getElementById('reveal-text');
         const $eyeIcon = document.getElementById('eye-icon');
 
-        const TIMER_MAX = 30;
+        const TIMER_MAX = 40; // 🌟 UPDATED: Max timer set to 40 seconds
 
         // --- Login Functions ---
 
@@ -702,7 +702,8 @@
             // Update progress bar width
             $progressBar.style.width = `${percentage}%`;
 
-            if (timeLeft <= 10) {
+            // Change color to red and start buzz at 10 seconds remaining
+            if (timeLeft <= 10) { 
                 $timerText.classList.add('text-red-500');
                 $progressBar.classList.remove('bg-indigo-600');
                 $progressBar.classList.add('bg-red-500');
@@ -714,7 +715,7 @@
         }
 
         /**
-         * Starts the 30-second countdown.
+         * Starts the 40-second countdown.
          */
         function startTimer() {
             if (timerRunning) return; 
