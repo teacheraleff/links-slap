@@ -46,7 +46,25 @@
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
-    <div id="quiz-container" class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6 md:p-10">
+    <!-- 🌟 NEW: Login Screen -->
+    <div id="login-screen" class="w-full max-w-sm bg-white shadow-lg rounded-xl p-6 md:p-8 text-center">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Challenge Login</h2>
+        <p class="text-gray-500 mb-6">Enter the access code to start the competition.</p>
+        
+        <input type="password" id="password-input" placeholder="Password"
+               class="w-full p-3 mb-4 border border-gray-300 rounded-lg text-lg focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition"
+               onkeypress="if(event.key === 'Enter') checkPassword()">
+
+        <p id="login-message" class="text-sm text-red-500 mb-4 h-5"></p>
+
+        <button onclick="checkPassword()"
+                class="w-full py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300">
+            Access Quiz
+        </button>
+    </div>
+    <!-- 🌟 END: Login Screen -->
+
+    <div id="quiz-container" class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6 md:p-10 hidden">
         
         <header class="text-center mb-8">
             <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-2">English Teachers' Knowledge Challenge</h1>
@@ -578,8 +596,15 @@
         let timerRunning = false; // Controls the timer state specifically
         let selectedOption = null;
         let answersRevealed = false;
+        
+        // 🌟 NEW: Password Constant
+        const CORRECT_PASSWORD = '12345';
 
         // --- DOM Elements ---
+        const $loginScreen = document.getElementById('login-screen');
+        const $passwordInput = document.getElementById('password-input');
+        const $loginMessage = document.getElementById('login-message');
+        const $quizContainer = document.getElementById('quiz-container');
         const $quizArea = document.getElementById('quiz-area');
         const $finalScreen = document.getElementById('final-screen');
         const $scoreDisplay = document.getElementById('score-display');
@@ -599,6 +624,26 @@
         const $eyeIcon = document.getElementById('eye-icon');
 
         const TIMER_MAX = 30;
+
+        // --- Login Functions ---
+
+        /**
+         * Checks the password input and grants access to the quiz if correct.
+         */
+        function checkPassword() {
+            const enteredPassword = $passwordInput.value.trim();
+            if (enteredPassword === CORRECT_PASSWORD) {
+                $loginScreen.classList.add('hidden');
+                $quizContainer.classList.remove('hidden');
+                $loginMessage.textContent = '';
+                resetQuiz(); // Start the quiz setup
+            } else {
+                $loginMessage.textContent = 'Incorrect password. Try again.';
+                $passwordInput.value = '';
+                $passwordInput.focus();
+            }
+        }
+
 
         // --- Utility Functions ---
 
@@ -766,6 +811,12 @@
          * Processes score and feedback for MCQ submissions.
          */
         function processMCQSubmission(selectedIndex) {
+            if (timerRunning) {
+                clearInterval(timerInterval);
+                timerRunning = false;
+            }
+            gameActive = false; 
+            
             const question = quizData[currentQuestionIndex];
             const options = document.querySelectorAll('.option-button');
 
@@ -997,8 +1048,12 @@
              loadQuestion();
         }
 
-        // Start the quiz on load
-        window.onload = resetQuiz;
+        // 🌟 Modified onload to show login screen first
+        window.onload = () => {
+             $quizContainer.classList.add('hidden'); // Ensure quiz is hidden initially
+             $loginScreen.classList.remove('hidden');
+             $passwordInput.focus();
+        };
 
     </script>
 </body>
