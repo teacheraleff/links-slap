@@ -1,1060 +1,775 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Teachers' Knowledge Challenge</title>
-    <!-- Load Tailwind CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Portal do Aluno | SLAP</title>
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/dqfi22uz0/image/upload/v1749543469/SLAP_FAVICON_AMARELO_coilvj.png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Use Inter font family -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=TASA+Orbiter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
-        /* Minimalist base style */
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #fcfcfc; /* Very light background */
+        body {
+            font-family: 'TASA Orbiter', sans-serif;
+            background-color: #f8fafc; /* stone-50 */
+            color: #1c1917; /* stone-900 */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Cores da Marca */
+        :root {
+            --slap-yellow: #F1D24B;
+            --slap-orange: #FF5C3D;
+            --slap-blue: #84C7DF;
+            --slap-purple: #8671D1;
+        }
+
+        .bg-slap-yellow { background-color: var(--slap-yellow); }
+        .text-slap-yellow { color: var(--slap-yellow); }
+        .border-slap-yellow { border-color: var(--slap-yellow); }
+
+        .bg-slap-blue { background-color: var(--slap-blue); }
+        .text-slap-blue { color: var(--slap-blue); }
+
+        /* Utilitários */
+        .card-shadow {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .bottom-nav-item {
+            position: relative;
+            transition: all 0.3s ease;
         }
         
-        /* Option Button Styling */
-        .option-button {
-            transition: all 0.2s ease-in-out;
-            border: 1px solid #d1d5db; /* Default light border */
-            border-radius: 8px; 
+        .bottom-nav-item.active {
+            color: #F1D24B;
         }
-        .option-button:hover:not(.selected) {
-            background-color: #f3f4f6; /* Very light hover effect */
+
+        .bottom-nav-item.active::after {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 4px;
+            background-color: #F1D24B;
+            border-radius: 0 0 4px 4px;
         }
-        
-        /* Feedback colors (must remain clear) */
-        .correct {
-            background-color: #10b981 !important; /* Tailwind green-500 */
-            color: white !important;
-            border-color: #10b981 !important;
+
+        /* Animações */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
         }
-        .incorrect {
-            background-color: #ef4444 !important; /* Tailwind red-500 */
-            color: white !important;
-            border-color: #ef4444 !important;
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        
-        /* Subtle Selection State */
-        .selected:not(.correct):not(.incorrect) {
-            background-color: #eff6ff !important; /* Tailwind blue-50 (very light blue) */
-            border-color: #3b82f6 !important; /* Accent border */
-            color: #1f2937 !important; /* Keep text dark for contrast */
+
+        /* Scroll horizontal suave */
+        .horizontal-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 1rem;
+            padding-bottom: 1rem;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .horizontal-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .status-p { background-color: #dcfce7; color: #166534; }
+        .status-f { background-color: #fee2e2; color: #991b1b; }
+        .status-pp { background-color: #fef3c7; color: #92400e; }
+        .status-empty { background-color: #f3f4f6; color: #9ca3af; }
+
+        /* Loader */
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #F1D24B;
+            width: 24px;
+            height: 24px;
+            -webkit-animation: spin 1s linear infinite; /* Safari */
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
+<body class="h-screen flex flex-col overflow-hidden">
 
-    <!-- 🌟 NEW: Login Screen -->
-    <div id="login-screen" class="w-full max-w-sm bg-white shadow-lg rounded-xl p-6 md:p-8 text-center">
-        <h2 class="text-3xl font-bold text-gray-800 mb-4">Challenge Login</h2>
-        <p class="text-gray-500 mb-6">Enter the access code to start the competition.</p>
-        
-        <input type="password" id="password-input" placeholder="Password (12345)"
-               class="w-full p-3 mb-4 border border-gray-300 rounded-lg text-lg focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition"
-               onkeypress="if(event.key === 'Enter') checkPassword()">
+    <!-- LOGIN SCREEN -->
+    <div id="login-view" class="fixed inset-0 z-50 bg-white flex flex-col items-center justify-center p-6 fade-in">
+        <div class="w-full max-w-sm">
+            <div class="text-center mb-10">
+                <img src="https://res.cloudinary.com/dqfi22uz0/image/upload/v1751163691/SLAP_TIPO_PRETO_1_xarnpe.png" alt="SLAP Logo" class="h-16 mx-auto mb-4">
+                <h1 class="text-2xl font-bold text-stone-800">Portal do Aluno</h1>
+                <p class="text-stone-500 text-sm mt-1">Acesse suas aulas, notas e frequência</p>
+            </div>
 
-        <p id="login-message" class="text-sm text-red-500 mb-4 h-5"></p>
+            <!-- Login Form -->
+            <form id="login-form" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-semibold text-stone-700 mb-1">E-mail</label>
+                    <input type="email" id="login-email" class="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-[#F1D24B] focus:border-transparent transition-all" placeholder="seu@email.com" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-stone-700 mb-1">Senha</label>
+                    <input type="password" id="login-password" class="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-[#F1D24B] focus:border-transparent transition-all" placeholder="••••••••" required>
+                </div>
+                
+                <div id="login-error" class="hidden p-3 bg-red-50 text-red-600 text-sm rounded-lg text-center font-medium"></div>
 
-        <button onclick="checkPassword()"
-                class="w-full py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300">
-            Access Quiz
-        </button>
+                <button type="submit" class="w-full py-3.5 bg-[#F1D24B] hover:bg-[#eac32a] text-stone-900 font-bold rounded-xl shadow-lg shadow-yellow-100 transition-all transform active:scale-95 flex items-center justify-center">
+                    <span id="btn-text">Entrar</span>
+                    <div id="btn-loader" class="loader hidden ml-2"></div>
+                </button>
+                
+                <button type="button" onclick="toggleAuthMode('signup')" class="w-full text-sm text-stone-500 hover:text-[#F1D24B] font-medium transition-colors">
+                    Primeiro acesso? Cadastre sua senha
+                </button>
+            </form>
+
+            <!-- Signup Form (Initially Hidden) -->
+            <form id="signup-form" class="space-y-5 hidden">
+                <div class="text-center mb-2">
+                    <h2 class="text-lg font-bold text-stone-800">Criar Acesso</h2>
+                    <p class="text-xs text-stone-500">Use o e-mail cadastrado na sua matrícula</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-stone-700 mb-1">E-mail</label>
+                    <input type="email" id="signup-email" class="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-[#F1D24B] focus:border-transparent transition-all" placeholder="seu@email.com" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-stone-700 mb-1">Criar Senha</label>
+                    <input type="password" id="signup-password" class="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-[#F1D24B] focus:border-transparent transition-all" placeholder="Mínimo 6 caracteres" minlength="6" required>
+                </div>
+                
+                <div id="signup-error" class="hidden p-3 bg-red-50 text-red-600 text-sm rounded-lg text-center font-medium"></div>
+
+                <button type="submit" class="w-full py-3.5 bg-stone-800 hover:bg-stone-900 text-white font-bold rounded-xl shadow-lg transition-all transform active:scale-95 flex items-center justify-center">
+                    <span id="signup-btn-text">Cadastrar</span>
+                    <div id="signup-btn-loader" class="loader hidden ml-2" style="border-top-color: white;"></div>
+                </button>
+                
+                <button type="button" onclick="toggleAuthMode('login')" class="w-full text-sm text-stone-500 hover:text-[#F1D24B] font-medium transition-colors">
+                    Já tenho conta. Fazer Login
+                </button>
+            </form>
+            
+            <p class="mt-8 text-center text-xs text-stone-400">
+                Problemas no acesso? Contate a secretaria.
+            </p>
+        </div>
     </div>
-    <!-- 🌟 END: Login Screen -->
 
-    <div id="quiz-container" class="w-full max-w-2xl bg-white shadow-lg rounded-xl p-6 md:p-10 hidden">
+    <!-- MAIN APP CONTAINER (Hidden initially) -->
+    <div id="app-view" class="hidden flex-1 flex flex-col h-full bg-stone-50">
         
-        <header class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-2">English Teachers' Knowledge Challenge</h1>
-            <p class="text-lg text-gray-500">Test your pedagogical knowledge!</p>
-            <!-- Score display is simplified -->
-            <div id="score-display" class="text-xl font-semibold text-indigo-600 mt-4">Score: 0</div>
+        <!-- HEADER -->
+        <header class="bg-white px-6 pt-12 pb-4 shadow-sm z-10 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center border-2 border-white shadow-sm overflow-hidden">
+                    <img id="header-avatar" src="" class="w-full h-full object-cover hidden" alt="Avatar">
+                    <span id="header-initials" class="text-[#F1D24B] font-bold text-sm">AL</span>
+                </div>
+                <div>
+                    <p class="text-xs text-stone-500 font-medium">Olá,</p>
+                    <h2 id="header-name" class="text-lg font-bold text-stone-800 leading-tight">Aluno</h2>
+                </div>
+            </div>
+            <button id="logout-btn" class="p-2 bg-stone-100 rounded-full text-stone-500 hover:text-red-500 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            </button>
         </header>
 
-        <!-- Timer and Question Area -->
-        <div id="quiz-area" class="space-y-6">
+        <!-- CONTENT AREA (Scrollable) -->
+        <main id="main-content" class="flex-1 overflow-y-auto pb-24 p-6">
             
-            <!-- Timer Layout: Linear Progress Bar -->
-            <div class="space-y-4">
-                <div class="flex justify-between items-center">
-                    <p class="text-sm font-medium text-indigo-600" id="question-counter"></p>
-                    <!-- Timer Text - starts hidden/inactive -->
-                    <div id="timer-text" class="text-2xl font-bold text-gray-800 opacity-0">40s</div>
+            <!-- HOME SECTION -->
+            <section id="tab-home" class="space-y-6 fade-in">
+                <!-- Info Card -->
+                <div class="bg-gradient-to-br from-[#1c1917] to-[#2d2a28] rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#F1D24B] rounded-full filter blur-3xl opacity-10 transform translate-x-10 -translate-y-10"></div>
+                    
+                    <div class="relative z-10">
+                        <span id="student-modalidade" class="inline-block px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-semibold mb-4 border border-white/20">VIP</span>
+                        
+                        <div class="mb-6">
+                            <p class="text-stone-400 text-xs mb-1 uppercase tracking-wider">Nível Atual</p>
+                            <h3 id="student-level" class="text-3xl font-bold text-[#F1D24B]">B1 Intermediário</h3>
+                        </div>
+
+                        <div class="flex justify-between items-end">
+                            <div>
+                                <p class="text-stone-400 text-xs mb-1">Professor</p>
+                                <p id="student-teacher" class="font-medium">Carregando...</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-stone-400 text-xs mb-1">Status</p>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                                    <span class="font-medium">Ativo</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                
-                <!-- Progress Bar Container - starts inactive -->
-                <div id="progress-bar-container" class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-4 opacity-0">
-                    <div id="progress-bar" class="h-full bg-indigo-600 transition-all duration-100 ease-linear" style="width: 100%;"></div>
+
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-stone-100 flex flex-col items-center justify-center text-center">
+                        <div class="w-10 h-10 rounded-full bg-blue-50 text-[#84C7DF] flex items-center justify-center mb-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <p class="text-2xl font-bold text-stone-800" id="stat-attendance">0%</p>
+                        <p class="text-xs text-stone-500 font-medium">Assiduidade</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-stone-100 flex flex-col items-center justify-center text-center">
+                        <div class="w-10 h-10 rounded-full bg-purple-50 text-[#8671D1] flex items-center justify-center mb-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <p class="text-2xl font-bold text-stone-800" id="stat-classes">0</p>
+                        <p class="text-xs text-stone-500 font-medium">Aulas Feitas</p>
+                    </div>
                 </div>
+
+                <!-- Biscoito da Sorte -->
+                <div class="bg-[#FFFBEB] border border-[#F1D24B]/30 p-5 rounded-xl relative">
+                    <div class="flex gap-4">
+                        <div class="text-3xl">🥠</div>
+                        <div>
+                            <h4 class="font-bold text-stone-800 mb-1">Quote do Dia</h4>
+                            <p id="fortune-text" class="text-sm text-stone-600 italic">"O aprendizado é a única coisa que a mente nunca se cansa, nunca tem medo e nunca se arrepende."</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PEF SECTION -->
+            <section id="tab-pef" class="hidden space-y-6 fade-in">
+                <h2 class="text-xl font-bold text-stone-800">Frequência (PEF)</h2>
                 
-                <p class="text-2xl font-semibold text-gray-800" id="question-text">Loading question...</p>
-            </div>
-            <!-- End Timer Layout -->
-            
-            <div id="interaction-bar" class="flex justify-between items-center border-b border-gray-200 pb-4">
-                <p id="message-box" class="text-sm font-medium text-gray-600"></p>
-                
-                <!-- Reveal Button (only for MCQ) -->
-                <button id="reveal-button" class="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition border border-gray-200 hidden">
-                    <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye text-gray-600"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                    <span id="reveal-text" class="text-sm font-semibold text-gray-700 hidden sm:inline">Reveal Answers</span>
-                </button>
-            </div>
+                <div class="bg-white rounded-xl shadow-sm border border-stone-100 overflow-hidden">
+                    <div class="p-4 border-b border-stone-100 bg-stone-50 flex justify-between items-center">
+                        <span class="text-sm font-semibold text-stone-600">Registro de Aulas</span>
+                        <div class="flex gap-2 text-xs">
+                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500"></span> P</span>
+                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-500"></span> F</span>
+                        </div>
+                    </div>
+                    
+                    <div id="pef-grid" class="p-4 grid grid-cols-5 gap-3">
+                        <!-- Grid generated via JS -->
+                    </div>
+                </div>
 
-            <!-- Answer Options (MCQ) or Answer Input Area (Open) -->
-            <div id="options-container" class="space-y-3 opacity-0 transition-opacity duration-300">
-                <!-- Buttons/Input will be injected here -->
-            </div>
+                <!-- Legend -->
+                <div class="grid grid-cols-1 gap-3">
+                    <div class="bg-white p-3 rounded-lg border-l-4 border-green-500 shadow-sm">
+                        <p class="text-xs text-stone-500">Aulas Presentes</p>
+                        <p class="text-lg font-bold text-stone-800" id="pef-present-count">0</p>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg border-l-4 border-red-500 shadow-sm">
+                        <p class="text-xs text-stone-500">Faltas</p>
+                        <p class="text-lg font-bold text-stone-800" id="pef-absent-count">0</p>
+                    </div>
+                </div>
+            </section>
 
-            <!-- Action Button -->
-            <div class="pt-6 border-t border-gray-200">
-                <button id="action-button" class="w-full py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300">
-                    Start Quiz
-                </button>
-            </div>
+            <!-- GRADES SECTION -->
+            <section id="tab-grades" class="hidden space-y-6 fade-in">
+                <h2 class="text-xl font-bold text-stone-800">Boletim</h2>
 
-        </div>
+                <div class="bg-white rounded-xl shadow-sm border border-stone-100 p-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-purple-50 rounded-bl-full -mr-4 -mt-4 z-0"></div>
+                    
+                    <div class="relative z-10 text-center mb-8">
+                        <p class="text-sm text-stone-500 uppercase tracking-wide font-medium">Nota Final</p>
+                        <div class="flex justify-center items-baseline gap-1 mt-2">
+                            <span id="final-grade" class="text-5xl font-extrabold text-[#8671D1]">0.0</span>
+                            <span class="text-stone-400 font-medium">/ 100</span>
+                        </div>
+                        <span id="approval-badge" class="inline-block mt-3 px-3 py-1 bg-stone-100 text-stone-500 rounded-full text-xs font-bold uppercase tracking-wider">
+                            Pendente
+                        </span>
+                    </div>
 
-        <!-- Final Score Screen -->
-        <div id="final-screen" class="text-center hidden p-8">
-            <h2 class="text-3xl font-bold text-indigo-600 mb-4">Quiz Finished!</h2>
-            <p class="text-xl text-gray-700 mb-6">Your final score is:</p>
-            <p id="final-score-display" class="text-5xl font-extrabold text-green-600 mb-8"></p>
-            <button onclick="resetQuiz()" class="py-3 px-8 bg-gray-800 text-white font-bold rounded-lg shadow-lg hover:bg-gray-900 transition duration-300">
-                Play Again
+                    <div class="space-y-4 relative z-10" id="grades-list">
+                        <!-- Grades injected via JS -->
+                    </div>
+                </div>
+
+                <div id="teacher-notes-container" class="hidden bg-yellow-50 border border-yellow-200 p-5 rounded-xl">
+                    <h4 class="font-bold text-yellow-800 mb-2 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
+                        Observação do Professor
+                    </h4>
+                    <p id="teacher-notes" class="text-sm text-stone-700 leading-relaxed italic">
+                        
+                    </p>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- BOTTOM NAVIGATION -->
+        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-stone-200 px-6 py-3 flex justify-between items-center z-40 pb-safe">
+            <button onclick="switchTab('home')" class="bottom-nav-item active flex flex-col items-center gap-1 text-stone-400 p-2" id="nav-home">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                <span class="text-[10px] font-bold">Início</span>
             </button>
-        </div>
+            <button onclick="switchTab('pef')" class="bottom-nav-item flex flex-col items-center gap-1 text-stone-400 p-2" id="nav-pef">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                <span class="text-[10px] font-bold">Aulas</span>
+            </button>
+            <button onclick="switchTab('grades')" class="bottom-nav-item flex flex-col items-center gap-1 text-stone-400 p-2" id="nav-grades">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                <span class="text-[10px] font-bold">Notas</span>
+            </button>
+        </nav>
     </div>
 
-    <script>
-        // Consolidated and structured quiz data based on user input
-        const quizData = [
-            // --- SLAP Method ---
-            {
-                type: 'mcq',
-                question: "The SPARK phase in the SLAP Method primarily aims to:",
-                options: [
-                    { text: "Introduce the target concept through emotionally engaging context rather than explicit explanation.", isCorrect: false, rationale: "The SPARK phase focuses on engagement and emotional safety, not introducing the core concept." },
-                    { text: "Evaluate students’ fluency.", isCorrect: false, rationale: "Fluency is evaluated in the PERFORM phase." },
-                    { text: "Create emotional safety and stimulate engagement by lowering the Affective Filter.", isCorrect: true, rationale: "Correct. Lowering the Affective Filter is the primary emotional goal of the SPARK phase." },
-                    { text: "Reinforce prior knowledge by connecting it to real-world situations.", isCorrect: false, rationale: "This relates more to the Lead-In purpose, but the main aim of SPARK is emotional readiness." }
-                ]
-            },
-            {
-                type: 'mcq',
-                question: "If the teacher moves too quickly from LEARN to PERFORM, without giving time for the APPLY phase, what is the pedagogical risk?",
-                options: [
-                    { text: "Students memorize the content but forget it by the end of the class.", isCorrect: false, rationale: "Memorization issues are typical of lack of practice or relevance." },
-                    { text: "Students feel insecure because they didn’t have enough practice beforehand.", isCorrect: true, rationale: "Correct. APPLY provides the structured practice needed to build confidence before the free production of PERFORM." },
-                    { text: "Students get bored because the class becomes too theoretical.", isCorrect: false, rationale: "Skipping APPLY makes the class less structured, not more theoretical." },
-                    { text: "Students improve fluency but lose grammatical accuracy.", isCorrect: false, rationale: "Skipping APPLY sacrifices both accuracy (practice) and fluency (confidence)." }
-                ]
-            },
-            {
-                type: 'open',
-                question: "The following describes which phase of the SLAP Method? 'It's dynamic and interactive — students use the target language in meaningful ways, usually through communicative tasks or challenges. The teacher provides guidance, but students are encouraged to take risks and use what they’ve just learned in situations.'",
-                answer: "APPLY"
-            },
-            {
-                type: 'mcq',
-                question: "What does the 'Cycle Principle' suggest in the context of the SLAP Method?",
-                options: [
-                    { text: "Each phase depends on the success of the previous one", isCorrect: true, rationale: "Correct. The Cycle Principle emphasizes that each phase builds upon the foundation laid by the one before it." },
-                    { text: "Phases can occur in different orders, depending on context", isCorrect: false, rationale: "The phases must be followed in order (SPARK, LEARN, APPLY, PERFORM)." },
-                    { text: "The PERFORM phase is the most important one", isCorrect: false, rationale: "All phases are equally important for overall acquisition." },
-                    { text: "The order of the phases should change from time to time to guarantee students' engagement", isCorrect: false, rationale: "The phases should not change order." }
-                ]
-            },
-            {
-                type: 'mcq',
-                question: "A teacher uses pair work with short dialogues but constantly interrupts to correct mistakes. The teacher claims this was the APPLY phase. Based on SLAP, is this accurate?",
-                options: [
-                    { text: "Yes — because students are already using the new language in interaction.", isCorrect: false, rationale: "Interaction is not the sole factor." },
-                    { text: "No — because heavy correction and focus on accuracy indicate the activity still belongs to LEARN.", isCorrect: true, rationale: "Correct. Although APPLY focuses on accuracy, constant interruption during speaking activity transforms it into a highly controlled drill, characteristic of LEARN or highly controlled practice." },
-                    { text: "Yes — because Apply focus on accuracy, so correction on-the-spot is kind of necessary.", isCorrect: false, rationale: "Correction is necessary, but constant interruption still undermines the 'practice' flow." },
-                    { text: "No — because Apply must be completely free communication with no teacher intervention.", isCorrect: false, rationale: "APPLY requires teacher guidance and intervention." }
-                ]
-            },
-            {
-                type: 'mcq',
-                question: "Which correction approach is most appropriate during the PERFORM phase to preserve students’ confidence?",
-                options: [
-                    { text: "Immediate on-the-spot correction, to maintain accuracy", isCorrect: false, rationale: "This increases the Affective Filter and hurts fluency." },
-                    { text: "Peer correction during the activity to keep the students engaged", isCorrect: false, rationale: "This can still be distracting and disrupt flow." },
-                    { text: "Recasting while students speak, to keep the Affective Filter low", isCorrect: false, rationale: "Recasting is best for less formal correction, but delayed correction is preferred for pure fluency." },
-                    { text: "Delayed correction after task completion", isCorrect: true, rationale: "Correct. This preserves fluency and maintains a low Affective Filter during the production stage." }
-                ]
-            },
-            {
-                type: 'open',
-                question: "While Learn focuses on FORM and structure, Apply focuses on practice and accuracy, transforming knowledge into confident use.",
-                answer: "FORM"
-            },
-            {
-                type: 'open',
-                question: "While Spark focuses on engagement, Perform focuses on ____, connecting emotional motivation to real communication.",
-                answer: "FLUENCY"
-            },
-            // --- TTT vs. STT ---
-            {
-                type: 'mcq',
-                question: "A teacher reduces TTT drastically to maximize STT, but students start producing language full of mistakes. According to communicative balance, what’s the real problem here?",
-                options: [
-                    { text: "STT was too high, and students felt overconfident.", isCorrect: false, rationale: "Confidence issues are less likely to lead to errors than lack of input." },
-                    { text: "The teacher reduced TTT without offering enough input or modeling.", isCorrect: true, rationale: "Correct. Reducing TTT without sufficient modeling (meaningful TTT) means students lack the necessary input for successful STT." },
-                    { text: "The tasks were too easy for their level, and students increased their Affective Filter.", isCorrect: false, rationale: "Easy tasks reduce the Affective Filter." },
-                    { text: "The teacher corrected too much during STT, immediately activating the Monitor.", isCorrect: false, rationale: "The text states the problem is 'full of mistakes', suggesting lack of input, not over-correction." }
-                ]
-            },
-            {
-                type: 'mcq',
-                question: "Teacher John and Teacher Anne have the same STT:TTT ratio (70:30). John’s students are hesitant, while Anne’s are confident and fluent. What best explains the difference?",
-                options: [
-                    { text: "John probably speaks too fast, while Anne speaks more slowly.", isCorrect: false, rationale: "Speaking speed is a secondary factor." },
-                    { text: "Anne’s TTT is more meaningful.", isCorrect: true, rationale: "Correct. Quality of teacher talk (meaningful input and modeling) matters more than the quantity of silence." },
-                    { text: "John corrects too little, and Anne corrects all mistakes immediately.", isCorrect: false, rationale: "Immediate correction hurts fluency." },
-                    { text: "Anne’s students have better pronunciation, which automatically increases fluency.", isCorrect: false, rationale: "Pronunciation is a factor, but the quality of TTT is the pedagogical difference." }
-                ]
-            },
-            {
-                type: 'mcq',
-                question: "Teacher Lisa wants to increase STT by using open-ended questions, but her students still respond with simple answers. What’s the most likely issue?",
-                options: [
-                    { text: "The questions are too difficult for their level.", isCorrect: false, rationale: "If they were too difficult, they'd likely answer 'I don't know'." },
-                    { text: "The students don’t have enough wait time to process and answer.", isCorrect: false, rationale: "Wait time is a factor, but not the most likely issue for recurring simple answers." },
-                    { text: "Lisa’s TTT is still too high during instructions, leaving no room for student initiative.", isCorrect: false, rationale: "This doesn't directly explain the lack of communication." },
-                    { text: "The questions are not genuinely communicative.", isCorrect: true, rationale: "Correct. If questions can be answered with 'yes/no' or single words, they lack communicative purpose, hindering meaningful STT." }
-                ]
-            },
-            {
-                type: 'mcq',
-                question: "During pair work, Teacher Mike notices that one dominant student keeps talking. Which strategy would increase meaningful STT?",
-                options: [
-                    { text: "Split pairs again and give everyone the same topic.", isCorrect: false, rationale: "This doesn't address the dominance issue." },
-                    { text: "Use roles or timed turns to balance participation.", isCorrect: true, rationale: "Correct. These techniques ensure equal opportunity for speaking among students." },
-                    { text: "Correct the dominant student’s mistakes more often.", isCorrect: false, rationale: "This increases TTT and only addresses errors, not participation balance." },
-                    { text: "Give the same question to the whole class at once.", isCorrect: false, rationale: "This reduces individual STT opportunities." }
-                ]
-            },
-            {
-                type: 'open',
-                question: "Not all teacher talk is bad — the key is to make ____ TTT that provides input and modeling.",
-                answer: "MEANINGFUL"
-            },
-            {
-                type: 'open',
-                question: "The balance between TTT and STT depends not on quantity, but on the ____ of interaction.",
-                answer: "QUALITY"
-            },
-            {
-                type: 'mcq',
-                question: "A teacher notices students are increasingly passive despite covering a large amount of material. According to SLAP’s TTT/STT approach, what is the most likely cause?",
-                options: [
-                    { text: "The teacher is using too many open-ended prompts that overwhelm beginners.", isCorrect: false, rationale: "Passivity usually results from lack of opportunity or confidence." },
-                    { text: "The teacher’s excessive explanations and modeling are limiting student production.", isCorrect: true, rationale: "Correct. High, non-meaningful TTT reduces STT opportunity, leading to passivity." },
-                    { text: "The students are not yet confident enough to speak without written prompts.", isCorrect: false, rationale: "This is a consequence, not the cause (which is TTT control)." },
-                    { text: "The teacher is underusing correction techniques in the PERFORM phase.", isCorrect: false, rationale: "Correction in PERFORM is supposed to be minimal to preserve fluency." }
-                ]
-            },
-            {
-                type: 'mcq',
-                question: "During the PERFORM phase, the instructor keeps interrupting students to correct errors. Which best describes the pedagogical issue here in terms of TTT/STT balance?",
-                options: [
-                    { text: "The instructor is prioritizing accuracy control which is the goal of on-the-spot correction during APPLY and PERFORM phases.", isCorrect: false, rationale: "Accuracy control should not interrupt flow during PERFORM." },
-                    { text: "The instructor is maximizing STT through real-time interaction.", isCorrect: false, rationale: "Interruptions decrease STT." },
-                    { text: "The instructor’s interventions increase TTT.", isCorrect: true, rationale: "Correct. Each interruption is teacher talk and disrupts the student talk time flow." },
-                    { text: "The instructor is appropriately scaffolding speech using immediate feedback.", isCorrect: false, rationale: "Immediate feedback is inappropriate for the fluency-focused PERFORM phase." }
-                ]
-            },
-            // --- WARM-UP VS LEAD IN ---
-            {
-                type: 'mcq',
-                question: "A teacher shows a funny meme unrelated to the topic, discusses it, then asks, “How might this idea connect to today’s topic?”. Which SPARK strategy is being used?",
-                options: [
-                    { text: "Lead-In, but the strategy is not being applied correctly.", isCorrect: true, rationale: "Correct. A Lead-In must connect to the lesson topic, but the teacher started with a non-topic-specific warm-up and tried to retroactively force a connection." },
-                    { text: "Warm-Up followed by a Lead-In, engaging curiosity and connecting to the lesson topic.", isCorrect: false, rationale: "It's one strategy (Lead-In) that failed to fulfill its connecting purpose." },
-                    { text: "Warm-Up only.", isCorrect: false, rationale: "The question tried to make a connection, so it was intended as a Lead-In." },
-                    { text: "Lead-In only, skipping the warm-up.", isCorrect: false, rationale: "The activity itself was a warm-up." }
-                ]
-            },
-            {
-                type: 'mcq',
-                question: "Which statement best explains the critical transition from Lead-In to the LEARN phase?",
-                options: [
-                    { text: "The transition is considered optional and may be implemented only when the specific context of the class makes it necessary.", isCorrect: false, rationale: "The transition is mandatory." },
-                    { text: "The Lead-In should provide a condensed preview of the lesson’s theoretical content to prepare students for the LEARN phase", isCorrect: false, rationale: "The Lead-In should avoid explicit theory." },
-                    { text: "The Lead-In must clearly illustrate the relevance of the upcoming theory, establishing why students need it and validating the content", isCorrect: true, rationale: "Correct. The Lead-In's primary function is to create a 'hook' that justifies the necessity of the theory to be taught in LEARN." },
-                    { text: "The transition should primarily serve as a diagnostic tool to assess prior knowledge before teaching", isCorrect: false, rationale: "Diagnosis is secondary to establishing relevance." }
-                ]
-            },
-            {
-                type: 'mcq',
-                question: "Why is it important to avoid explicit theoretical instruction in the lead-in phase?",
-                options: [
-                    { text: "Because the Lead-In should focus on explaining grammar rules in detail", isCorrect: false, rationale: "Theory belongs to LEARN." },
-                    { text: "Because the Lead-In’s purpose is to spark curiosity and create context, not to teach theory", isCorrect: true, rationale: "Correct. The focus is on contextual use and relevance, reserving theory for the LEARN phase." },
-                    { text: "Because students are not ready to participate in activities at this stage", isCorrect: false, rationale: "Students should be participating emotionally in the Lead-In." },
-                    { text: "Because theoretical instruction should be excluded from the SLAP cycle to maintain a communicative environment", isCorrect: false, rationale: "Theory is necessary in the LEARN phase." }
-                ]
-            },
-            {
-                type: 'mcq',
-                question: "Teacher Nicholas starts class with 'Two Truths and a Lie.' Afterward, he connects it by saying, “Today we’ll learn how to ask better questions!” What did he do successfully in terms of SPARK?",
-                options: [
-                    { text: "He turned a warm-up into a lead-in", isCorrect: true, rationale: "Correct. The activity itself was a general warm-up, but by connecting it to the topic, he successfully transitioned it into a Lead-In." },
-                    { text: "He turned a lead-in into a warm-up", isCorrect: false, rationale: "The order is reversed." },
-                    { text: "He moved directly to Apply", isCorrect: false, rationale: "This activity is for sparking engagement." },
-                    { text: "Connected the activity with the grammar goal", isCorrect: false, rationale: "This is too vague; 'turned a warm-up into a lead-in' describes the specific process." }
-                ]
-            },
-            {
-                type: 'open',
-                question: "The _______ is essential to connect with the upcoming theory, validating the content and creating relevance.",
-                answer: "LEAD-IN"
-            },
-            {
-                type: 'open',
-                question: "While the _______ can be general and non-topic-specific, the _______ must connect clearly to the lesson topic.",
-                answer: "WARM-UP / LEAD-IN"
-            },
-            {
-                type: 'mcq',
-                question: "How is emotional preparation a critical component of the Warm-Up in the SLAP Method?",
-                options: [
-                    { text: "It allows teachers to evaluate students’ mastery of new grammar structures", isCorrect: false, rationale: "Warm-Up is not for evaluation." },
-                    { text: "It ensures students memorize vocabulary before the lesson begins", isCorrect: false, rationale: "Warm-Up is not for memorization." },
-                    { text: "It lowers the Affective Filter, making students more willing to speak and participate", isCorrect: true, rationale: "Correct. The primary goal of Warm-Up is to transition the student into the learning environment and reduce anxiety." },
-                    { text: "It increases the Affective Filter, making students more willing to speak and participate", isCorrect: false, rationale: "Increasing the filter hinders learning." }
-                ]
-            },
-            // --- Practice vs. Production ---
-            {
-                type: 'open',
-                question: "A teacher closely monitors practice dialogues, giving immediate feedback (APPLY). Later, during an open debate, the teacher steps back, only noting errors for later discussion (PERFORM). Which two phases are represented in this sequence?",
-                answer: "APPLY / PERFORM"
-            },
-            {
-                type: 'mcq',
-                question: "In the APPLY phase of the SLAP Method, mistakes are seen as:",
-                options: [
-                    { text: "Signs that the student isn’t ready to move on", isCorrect: false, rationale: "Mistakes are expected in APPLY." },
-                    { text: "Failures that shouldn't be immediately corrected", isCorrect: false, rationale: "Immediate, strategic correction is needed in APPLY." },
-                    { text: "Expected feedback for learning", isCorrect: true, rationale: "Correct. Mistakes in APPLY provide valuable diagnostic feedback to guide further practice." },
-                    { text: "Evidence that the instruction was ineffective", isCorrect: false, rationale: "This is a negative perspective; mistakes are part of the process." }
-                ]
-            },
-            {
-                type: 'mcq',
-                question: "In the transition from APPLY to PERFORM, what must the teacher primarily adjust?",
-                options: [
-                    { text: "The level of grammatical complexity in tasks", isCorrect: false, rationale: "Complexity should be similar, but focus changes." },
-                    { text: "The students’ exposure to new vocabulary", isCorrect: false, rationale: "New vocab belongs in LEARN." },
-                    { text: "Their intervention strategy and level of control", isCorrect: true, rationale: "Correct. The teacher must transition from high control/immediate correction (APPLY) to low control/delayed correction (PERFORM)." },
-                    { text: "The time allocated to warm-up activities", isCorrect: false, rationale: "Warm-up is separate." }
-                ]
-            },
-            {
-                type: 'mcq',
-                question: "During the PERFORM phase, the teacher’s role should be:",
-                options: [
-                    { text: "To correct errors immediately to reinforce form", isCorrect: false, rationale: "Immediate correction hurts fluency." },
-                    { text: "To lead structured, accuracy-based drills", isCorrect: false, rationale: "This is the APPLY phase." },
-                    { text: "To act as a mediator and observer, avoiding interruptions", isCorrect: true, rationale: "Correct. The focus is on fluency and self-correction, so the teacher must step back." },
-                    { text: "To introduce new theoretical content for reflection", isCorrect: false, rationale: "Theory introduction is LEARN." }
-                ]
-            },
-            {
-                type: 'mcq',
-                question: "A teacher consistently corrects every mistake during a debate activity in PERFORM. According to the SLAP Method, what is the consequence of this?",
-                options: [
-                    { text: "It enhances student confidence and autonomy", isCorrect: false, rationale: "It does the opposite." },
-                    { text: "It disrupts fluency and raises the Affective Filter", isCorrect: true, rationale: "Correct. Interruptions break the flow of production and increase anxiety." },
-                    { text: "It improves grammatical precision without negative impact", isCorrect: false, rationale: "The impact is always negative in a fluency activity." },
-                    { text: "It transforms the activity into guided practice effectively", isCorrect: false, rationale: "It merely disrupts the PERFORM phase, it doesn't transform it into a productive APPLY phase." }
-                ]
-            },
-            {
-                type: 'mcq',
-                question: "Which of the following best describes the main goal of the APPLY phase?",
-                options: [
-                    { text: "Promote spontaneous and authentic speech", isCorrect: false, rationale: "This is the goal of PERFORM." },
-                    { text: "Strengthen accuracy and confidence through structured practice", isCorrect: true, rationale: "Correct. APPLY is the bridge between theoretical knowledge and free use." },
-                    { text: "Measure fluency under real-life conditions", isCorrect: false, rationale: "This is the goal of PERFORM." },
-                    { text: "Eliminate teacher intervention to simulate natural communication", isCorrect: false, rationale: "Teacher intervention is required for guided practice." }
-                ]
-            },
-            // --- Rapport ---
-            {
-                type: 'mcq',
-                question: "In the SLAP Method, rapport is essential because it directly influences which factor in language learning?",
-                options: [
-                    { text: "Friendship between the teacher and the student", isCorrect: false, rationale: "Friendship is not the goal." },
-                    { text: "The Affective Filter", isCorrect: true, rationale: "Correct. Good rapport lowers the Affective Filter, increasing willingness to take risks." },
-                    { text: "The TTT/STT ratio", isCorrect: false, rationale: "Rapport influences willingness to speak, but not the mechanical ratio." },
-                    { text: "The student’s grammatical accuracy", isCorrect: false, rationale: "Rapport doesn't directly influence accuracy." }
-                ]
-            },
-            {
-                type: 'open',
-                question: "Good rapport does not require ________, but rather mutual respect and trust between teacher and student.",
-                answer: "FRIENDSHIP"
-            },
-            {
-                type: 'mcq',
-                question: "A teacher believes that being close friends with students automatically enhances learning outcomes. This approach is problematic because:",
-                options: [
-                    { text: "Friendship naturally increases performance anxiety", isCorrect: false, rationale: "Friendship usually reduces performance anxiety." },
-                    { text: "Friendship can blur professional boundaries.", isCorrect: true, rationale: "Correct. Rapport must be built within professional boundaries to maintain authority and objectivity." },
-                    { text: "Rapport and friendship are interchangeable when trust exists", isCorrect: false, rationale: "They are not interchangeable." },
-                    { text: "Friendship improves motivation, so professional distance is unnecessary", isCorrect: false, rationale: "Professional distance is always necessary." }
-                ]
-            },
-            {
-                type: 'open',
-                question: "_______ depends on the instructor’s ability to project both empathy and consistency in their classroom presence, ensuring emotional safety without compromising professional authority.",
-                answer: "RAPPORT"
-            },
-            {
-                type: 'mcq',
-                question: "Durante a communicative activity, a teacher avoids correcting errors to avoid hurting the student’s feelings. Which principle of rapport is being misapplied?",
-                options: [
-                    { text: "Positive climate", isCorrect: false, rationale: "Climate is the overall feeling." },
-                    { text: "Mistake normalization", isCorrect: true, rationale: "Correct. Rapport requires normalizing mistakes as part of learning, not avoiding necessary correction." },
-                    { text: "Personal connection", isCorrect: false, rationale: "Personal connection is about knowing the student." },
-                    { text: "Emotional engagement", isCorrect: false, rationale: "Engagement is about interest." }
-                ]
-            },
-            {
-                type: 'mcq',
-                question: "During a warm-up, a teacher interrupts students repeatedly to correct minor errors. What misapplied rapport issue does this demonstrate?",
-                options: [
-                    { text: "Over-normalization of mistakes", isCorrect: false, rationale: "Correction is the opposite of normalization." },
-                    { text: "Lack of empathy", isCorrect: false, rationale: "Lack of empathy is too general." },
-                    { text: "High correction during emotionally sensitive phases increases anxiety", isCorrect: true, rationale: "Correct. Intervening during a phase meant to lower the Affective Filter immediately raises it." },
-                    { text: "Insufficient personal connection between the student and the teacher", isCorrect: false, rationale: "Connection is separate from correction strategy." }
-                ]
-            },
-            // --- Theories of Krashen ---
-            {
-                type: 'mcq',
-                question: "Which best explains why over-reliance on the Monitor during communicative tasks can hinder language development?",
-                options: [
-                    { text: "It allows students to self-correct minor errors, increasing accuracy without side effects", isCorrect: false, rationale: "There are side effects (reduced fluency)." },
-                    { text: "It improves vocabulary acquisition at the expense of grammar", isCorrect: false, rationale: "Monitor applies to form/grammar." },
-                    { text: "Constant conscious correction limits natural language use", isCorrect: true, rationale: "Correct. The Monitor, being conscious, slows down processing and interferes with fluent, natural communication (Acquisition)." },
-                    { text: "It replaces the need for comprehensible input entirely", isCorrect: false, rationale: "Monitor cannot replace Input." }
-                ]
-            },
-            {
-                type: 'mcq',
-                question: "A teacher notices that some advanced students frequently pause to edit their sentences while speaking freely. Which strategy aligns with Krashen’s Monitor Hypothesis to maximize fluency?",
-                options: [
-                    { text: "Increase immediate correction and drills to perfect their forms", isCorrect: false, rationale: "This encourages Monitor use when it should be minimized." },
-                    { text: "Lower the input level to i+0 so they feel more confident", isCorrect: false, rationale: "This stalls acquisition (Comprehensible Input)." },
-                    { text: "Encourage natural speech flow, reserving the Monitor for delayed correction", isCorrect: true, rationale: "Correct. By delaying correction, the teacher signals that fluency is the goal, discouraging conscious self-monitoring during production." },
-                    { text: "Focus only on accuracy, reducing communicative practice", isCorrect: false, rationale: "Accuracy focus is detrimental to fluency." }
-                ]
-            },
-            {
-                type: 'mcq',
-                question: "During a reading activity, a teacher notices that students understand 80% of the text but struggle with a few new words. If the teacher had made the text much more difficult, what would Krashen predict?",
-                options: [
-                    { text: "Students would learn faster due to challenge", isCorrect: false, rationale: "Only slightly challenging input (i+1) aids acquisition." },
-                    { text: "The input would become noise, blocking acquisition", isCorrect: true, rationale: "Correct. Input that is far beyond the learner's current level (i+2 or more) is incomprehensible and cannot be acquired." },
-                    { text: "Students would rely on the Monitor to self-correct", isCorrect: false, rationale: "Monitor doesn't help with incomprehensible input." },
-                    { text: "Fluency would automatically improve", isCorrect: false, rationale: "Fluency is not directly linked to reading difficulty." }
-                ]
-            },
-            {
-                type: 'open',
-                question: "When language input is _______ (i+0), learning stalls because the learner is not challenged enough to acquire new structures.",
-                answer: "TOO SIMPLE/EASY"
-            },
-            {
-                type: 'open',
-                question: "The SPARK phase is critical for lowering the _______ because it establishes emotional safety, engagement, and curiosity before formal instruction begins.",
-                answer: "AFFECTIVE FILTER"
-            },
-            // --- Correction Techniques ---
-            {
-                type: 'mcq',
-                question: "During a PERFORM activity, a student makes minor errors but continues speaking fluently. The instructor should:",
-                options: [
-                    { text: "Interrupt the student and correct the errors on-the-spot.", isCorrect: false, rationale: "This disrupts fluency and increases the Affective Filter." },
-                    { text: "Ask peers to correct the errors to ensure everyone’s participation.", isCorrect: false, rationale: "This also disrupts fluency." },
-                    { text: "Use Delayed Correction.", isCorrect: true, rationale: "Correct. Delayed correction addresses errors after the activity is complete, preserving the flow of speech." },
-                    { text: "Recast the phrase to ensure grammatical accuracy and fluency.", isCorrect: false, rationale: "Recasting can still be distracting in a high-focus fluency task." }
-                ]
-            },
-            {
-                type: 'open',
-                question: "A student says, 'He go to school yesterday.' The teacher repeats, 'He went to school yesterday,' without stopping the student. This technique is called:",
-                answer: "RECASTING"
-            },
-            {
-                type: 'mcq',
-                question: "Which scenario best illustrates the 'Golden Rule' of correction in SLAP?",
-                options: [
-                    { text: "Correcting every single grammatical mistake in a fluency activity", isCorrect: false, rationale: "This violates the principle of prioritizing fluency." },
-                    { text: "Ignoring errors in the APPLY phase to save time", isCorrect: false, rationale: "Correction is mandatory in APPLY." },
-                    { text: "Identifying errors that are essential for learning while letting non-critical mistakes occur", isCorrect: true, rationale: "Correct. Strategic correction means focusing on fossilization risks and core lesson goals." },
-                    { text: "Mostly using peer correction to avoid teacher intervention", isCorrect: false, rationale: "Peer correction should be balanced with teacher input." }
-                ]
-            },
-            {
-                type: 'mcq',
-                question: "A teacher is planning a lesson. Which correction type matches the most appropriate SLAP phase?",
-                options: [
-                    { text: "On-the-spot Correction → PERFORM / Delayed Correction → APPLY", isCorrect: false, rationale: "The phases are reversed." },
-                    { text: "Peer Correction → LEARN / Written Correction → SPARK", isCorrect: false, rationale: "Correction is inappropriate for SPARK and LEARN." },
-                    { text: "On-the-spot Correction → APPLY / Delayed Correction → PERFORM", isCorrect: true, rationale: "Correct. Accuracy focus in APPLY allows for immediate correction; fluency focus in PERFORM requires delay." },
-                    { text: "Recasting → LEARN / Written Correction → SPARK", isCorrect: false, rationale: "Correction is inappropriate for SPARK." }
-                ]
-            },
-            // --- Listening: Active Skill Mastery ---
-            {
-                type: 'mcq',
-                question: "During a conversation, the student deduces that there may be tension about a decision yet to be made, even though this is not directly stated. Which listening skill is the student using?",
-                options: [
-                    { text: "Listening for Gist", isCorrect: false, rationale: "Gist is about the main idea." },
-                    { text: "Listening for Detail", isCorrect: false, rationale: "Detail is about explicit facts." },
-                    { text: "Listening for Inference", isCorrect: true, rationale: "Correct. Inference involves deducing implied meaning from non-explicit cues." },
-                    { text: "Listening for Opinions and Attitudes", isCorrect: false, rationale: "This focuses on tone and emotion, not deduction of context." }
-                ]
-            },
-            {
-                type: 'mcq',
-                question: "During a political interview, a student identifies sarcasm in the speaker’s voice and realizes the speaker actually opposes the policy being discussed. Which listening type is being demonstrated?",
-                options: [
-                    { text: "Listening for Detail", isCorrect: false, rationale: "Detail is for facts." },
-                    { text: "Listening for Gist", isCorrect: false, rationale: "Gist is for the main topic." },
-                    { text: "Listening for Inference", isCorrect: false, rationale: "Inference focuses on implied content." },
-                    { text: "Listening for Opinions and Attitudes", isCorrect: true, rationale: "Correct. Identifying emotion, tone, and subjective stance falls under Opinions and Attitudes." }
-                ]
-            },
-            {
-                type: 'mcq',
-                question: "A student struggles to understand implied meaning in conversations, but the teacher assigns a Listening for Inference activity without first practicing Gist or Detail. The pedagogical mistake is:",
-                options: [
-                    { text: "Pressuring the student and raising the Affective Filter", isCorrect: false, rationale: "This is a consequence, not the mistake." },
-                    { text: "Assigning a task that is not advanced enough for the student’s current comprehension", isCorrect: false, rationale: "The task is too advanced." },
-                    { text: "Confusing Listening for Detail with Listening for Inference", isCorrect: false, rationale: "The teacher understands the difference." },
-                    { text: "Skipping necessary scaffolding before moving to higher-order inference", isCorrect: true, rationale: "Correct. Higher-order skills like inference must be built on the foundation of Gist and Detail (scaffolding)." }
-                ]
-            },
-            // --- Vygotsky: ZPD and Scaffolding ---
-            {
-                type: 'mcq',
-                question: "A teacher notices that students still rely heavily on sentence models during speaking tasks in the PERFORM phase. What pedagogical mistake might be occurring?",
-                options: [
-                    { text: "Scaffolding was introduced too early in the LEARN phase.", isCorrect: false, rationale: "Scaffolding is necessary early on." },
-                    { text: "Scaffolding was not gradually withdrawn as autonomy developed.", isCorrect: true, rationale: "Correct. Scaffolding must be reduced as the learner moves toward the independent performance goal of the PERFORM phase." },
-                    { text: "Students are overusing peer correction instead of teacher input.", isCorrect: false, rationale: "This is unlikely to cause model reliance." },
-                    { text: "The teacher is providing insufficient modeling during the APPLY phase.", isCorrect: false, rationale: "Insufficient modeling causes errors, not reliance on old models." }
-                ]
-            },
-            {
-                type: 'open',
-                question: "The Zone of Proximal Development represents the distance between what a learner can do independently and what they can achieve with ________.",
-                answer: "TEMPORARY GUIDANCE/SUPPORT"
-            },
-            {
-                type: 'mcq',
-                question: "According to Vygotsky’s ZPD, optimal learning occurs when the instructor…",
-                options: [
-                    { text: "Minimizes all teacher intervention so the learner can construct meaning independently.", isCorrect: false, rationale: "Minimizing all intervention ignores ZPD." },
-                    { text: "Provides continuous correction and modeling to prevent fossilization of errors.", isCorrect: false, rationale: "Continuous correction prevents autonomy." },
-                    { text: "Offers temporary, responsive support that bridges the learner’s current competence and the target skill.", isCorrect: true, rationale: "Correct. Scaffolding is, by definition, temporary support within the ZPD (i+1)." },
-                    { text: "Encourages peer collaboration, reducing teacher guidance from the process.", isCorrect: false, rationale: "Teacher guidance is critical." }
-                ]
-            },
-            {
-                type: 'mcq',
-                question: "In the SLAP framework, the gradual withdrawal of scaffolding should align most closely with which transition?",
-                options: [
-                    { text: "From PERFORM to EVALUATE", isCorrect: false, rationale: "This is too late." },
-                    { text: "From LEARN to APPLY", isCorrect: false, rationale: "Scaffolding is just starting." },
-                    { text: "From APPLY to PERFORM", isCorrect: true, rationale: "Correct. PERFORM is the independent production phase, so scaffolding must be withdrawn during the transition from the guided APPLY phase." },
-                    { text: "From OBSERVE to FEEDBACK", isCorrect: false, rationale: "This is not a SLAP phase." }
-                ]
-            },
-            {
-                type: 'open',
-                question: "In the SLAP method, _________ refers to the temporary, strategic support that allows the student to operate at the level of i+1, slightly beyond their current competence.",
-                answer: "SCAFFOLDING"
-            }
-        ];
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+        import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
-        // --- Global State ---
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let timerInterval;
-        let timeLeft = 40; // Updated initial value
-        let gameActive = false; // Controls if the user can interact (e.g., click options)
-        let timerRunning = false; // Controls the timer state specifically
-        let selectedOption = null;
-        let answersRevealed = false;
+        // Global State
+        let db, auth;
+        let currentStudent = null;
+        let currentUnitData = null; // Turma or VIP data
+        let attendanceData = null;
         
-        // 🌟 Password Constant
-        const CORRECT_PASSWORD = '12345';
+        // Use environment app ID if available, fallback to specific ID for demo
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'hub-gestao-slap';
 
-        // --- DOM Elements ---
-        const $loginScreen = document.getElementById('login-screen');
-        const $passwordInput = document.getElementById('password-input');
-        const $loginMessage = document.getElementById('login-message');
-        const $quizContainer = document.getElementById('quiz-container');
-        const $quizArea = document.getElementById('quiz-area');
-        const $finalScreen = document.getElementById('final-screen');
-        const $scoreDisplay = document.getElementById('score-display');
-        const $questionCounter = document.getElementById('question-counter');
-        const $questionText = document.getElementById('question-text');
-        
-        // Timer elements updated for linear bar
-        const $timerText = document.getElementById('timer-text');
-        const $progressBar = document.getElementById('progress-bar');
-        const $progressBarContainer = document.getElementById('progress-bar-container'); 
-        
-        const $optionsContainer = document.getElementById('options-container');
-        const $actionButton = document.getElementById('action-button');
-        const $messageBox = document.getElementById('message-box');
-        const $revealButton = document.getElementById('reveal-button');
-        const $revealText = document.getElementById('reveal-text');
-        const $eyeIcon = document.getElementById('eye-icon');
+        // --- CORE FUNCTIONS ---
 
-        const TIMER_MAX = 40; // 🌟 UPDATED: Max timer set to 40 seconds
-
-        // --- Login Functions ---
-
-        /**
-         * Checks the password input and grants access to the quiz if correct.
-         */
-        function checkPassword() {
-            const enteredPassword = $passwordInput.value.trim();
-            if (enteredPassword === CORRECT_PASSWORD) {
-                $loginScreen.classList.add('hidden');
-                $quizContainer.classList.remove('hidden');
-                $loginMessage.textContent = '';
-                resetQuiz(); // Start the quiz setup
-            } else {
-                $loginMessage.textContent = 'Incorrect password. Try again.';
-                $passwordInput.value = '';
-                $passwordInput.focus();
-            }
-        }
-
-
-        // --- Utility Functions ---
-
-        /**
-         * Generates a short, low-frequency buzzing sound using the Web Audio API.
-         */
-        function playBuzz() {
-            // Use window.AudioContext for maximum compatibility
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            if (!AudioContext) return; 
-
+        async function initApp() {
+            // FIX: Retrieve config from environment variable
+            let firebaseConfig;
             try {
-                const audioCtx = new AudioContext();
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-
-                // Set a low, buzzing frequency (e.g., 100Hz)
-                oscillator.frequency.setValueAtTime(100, audioCtx.currentTime); 
-                // Set volume
-                gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
-
-                // Start buzzing
-                oscillator.start();
-                
-                // Stop buzzing after 200ms
-                oscillator.stop(audioCtx.currentTime + 0.2); 
-            } catch (e) {
-                console.error("Audio playback failed:", e);
-                // Fail silently if audio API is not available/blocked
-            }
-        }
-        
-        /**
-         * Fisher-Yates shuffle algorithm to randomize the array order.
-         * @param {Array} array - The array to shuffle.
-         */
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
-        // --- Timer Functions ---
-
-        /**
-         * Updates the timer display (text and progress bar).
-         */
-        function updateTimerDisplay() {
-            $timerText.textContent = `${timeLeft}s`;
-            const percentage = (timeLeft / TIMER_MAX) * 100;
-            
-            // Update progress bar width
-            $progressBar.style.width = `${percentage}%`;
-
-            // Change color to red and start buzz at 10 seconds remaining
-            if (timeLeft <= 10) { 
-                $timerText.classList.add('text-red-500');
-                $progressBar.classList.remove('bg-indigo-600');
-                $progressBar.classList.add('bg-red-500');
-            } else {
-                $timerText.classList.remove('text-red-500');
-                $progressBar.classList.remove('bg-red-500');
-                $progressBar.classList.add('bg-indigo-600');
-            }
-        }
-
-        /**
-         * Starts the 40-second countdown.
-         */
-        function startTimer() {
-            if (timerRunning) return; 
-            
-            timerRunning = true;
-            $timerText.classList.remove('opacity-0');
-            $progressBarContainer.classList.remove('opacity-0');
-
-            clearInterval(timerInterval);
-            timeLeft = TIMER_MAX;
-            updateTimerDisplay();
-            
-            const questionType = quizData[currentQuestionIndex].type;
-
-            if (questionType === 'mcq') {
-                 // For MCQ, timer start is coupled with revealing options
-                 gameActive = true;
-                 $optionsContainer.classList.add('opacity-100');
-                 $optionsContainer.classList.remove('opacity-0');
-                 $actionButton.disabled = true; // Submit only enabled on selection
-                 $actionButton.textContent = "Submit Answer";
-            } else if (questionType === 'open') {
-                // For open questions, timer start is coupled with enabling Next Question
-                $actionButton.textContent = "Next Question";
-                $actionButton.disabled = false;
-                $actionButton.onclick = handleTimeOut; 
-            }
-
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                updateTimerDisplay();
-
-                // 🌟 BUZZ LOGIC: Play sound on the last 10 seconds (10, 9, 8, ..., 1)
-                if (timeLeft > 0 && timeLeft <= 10) {
-                    playBuzz();
-                }
-
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    handleTimeOut();
-                }
-            }, 1000);
-        }
-
-        /**
-         * Handles the case when the timer runs out or 'Next Question' is manually clicked for open questions.
-         */
-        function handleTimeOut() {
-            if (!timerRunning) return; 
-            clearInterval(timerInterval);
-            timerRunning = false;
-            gameActive = false; 
-
-            const question = quizData[currentQuestionIndex];
-
-            if (question.type === 'mcq') {
-                 $messageBox.textContent = timeLeft <= 0 ? 
-                    "Time's up! No answer submitted." : 
-                    "Answer submitted.";
-                
-                // If timed out without selecting, treat as null submission
-                const selectedIndex = timeLeft <= 0 && selectedOption === null ? null : selectedOption;
-                processMCQSubmission(selectedIndex);
-
-            } else if (question.type === 'open') {
-                // For open questions, we display the expected answer for teacher reference
-                const $openAnswerDisplay = document.getElementById('open-answer-display');
-                
-                $messageBox.textContent = timeLeft <= 0 ? 
-                    "Time's up! Time expired for this question." : 
-                    "Time completed. Moving to the next question.";
-                
-                // Show the official answer
-                if ($openAnswerDisplay) {
-                    // Update styling and show answer
-                    $openAnswerDisplay.textContent = `Expected Answer: ${question.answer}`;
-                    $openAnswerDisplay.classList.remove('hidden', 'border-gray-300');
-                    $openAnswerDisplay.classList.add('bg-indigo-50', 'text-indigo-700', 'border-indigo-400', 'shadow-inner');
-                }
-                
-                // Re-enable button and change to Next Question
-                $actionButton.textContent = "Next Question";
-                $actionButton.disabled = false;
-                $actionButton.onclick = nextQuestion;
-
-                updateScoreDisplay(); 
-            }
-            
-            // Hide the reveal button if visible
-            $revealButton.classList.add('hidden');
-        }
-
-        /**
-         * Processes score and feedback for MCQ submissions.
-         */
-        function processMCQSubmission(selectedIndex) {
-            if (timerRunning) {
-                clearInterval(timerInterval);
-                timerRunning = false;
-            }
-            gameActive = false; 
-            
-            const question = quizData[currentQuestionIndex];
-            const options = document.querySelectorAll('.option-button');
-
-            const isCorrect = selectedIndex !== null && question.options[selectedIndex].isCorrect;
-            
-            if (isCorrect) {
-                score++;
-                $messageBox.textContent = "Correct! Well done.";
-            } else if (selectedIndex !== null) {
-                const rationale = question.options[selectedIndex].rationale;
-                $messageBox.textContent = `Incorrect. ${rationale}`;
-            } else {
-                 $messageBox.textContent = "No answer selected. You ran out of time.";
-            }
-
-            // Reveal correct/incorrect highlights
-            options.forEach((btn, index) => {
-                const optionData = question.options[index];
-                btn.disabled = true;
-                if (optionData.isCorrect) {
-                    btn.classList.add('correct');
-                } else if (index === selectedOption) {
-                    btn.classList.add('incorrect');
-                }
-                btn.classList.remove('selected', 'border-gray-300');
-            });
-            
-            updateScoreDisplay(); 
-
-            // Change button to Next Question
-            $actionButton.textContent = "Next Question";
-            $actionButton.disabled = false;
-            $actionButton.onclick = nextQuestion;
-        }
-
-        // --- Quiz Core Logic ---
-
-        /**
-         * Loads the current question into the UI based on its type.
-         */
-        function loadQuestion() {
-            if (currentQuestionIndex >= quizData.length) {
-                showFinalScreen();
+                firebaseConfig = JSON.parse(__firebase_config);
+            } catch (error) {
+                console.error("Erro ao carregar configuração do Firebase:", error);
                 return;
             }
 
-            const question = quizData[currentQuestionIndex];
-            
-            // Reset state
-            selectedOption = null;
-            answersRevealed = false;
-            gameActive = false; 
-            timerRunning = false;
-            $messageBox.textContent = "";
-            $optionsContainer.innerHTML = '';
-            $optionsContainer.classList.remove('opacity-100');
-            $optionsContainer.classList.add('opacity-0'); 
-            $timerText.classList.add('opacity-0');
-            $progressBarContainer.classList.add('opacity-0');
-            $revealButton.classList.add('hidden');
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
 
-            // Update UI
-            $questionCounter.textContent = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
-            $questionText.textContent = question.question;
-
-            if (question.type === 'mcq') {
-                // Setup for Multiple Choice Questions (Timer starts on Reveal)
-                $revealButton.classList.remove('hidden');
-                $actionButton.textContent = "Submit Answer";
-                $actionButton.disabled = true;
-                $actionButton.onclick = () => processMCQSubmission(selectedOption);
-
-                // Create option buttons (still hidden by $optionsContainer opacity)
-                question.options.forEach((option, index) => {
-                    const letter = String.fromCharCode(65 + index); // A, B, C, D...
-                    const button = document.createElement('button');
-                    button.classList.add('option-button', 'w-full', 'p-4', 'text-left', 'rounded-lg', 'font-medium', 'text-gray-700');
-                    
-                    // Add letter prefix A), B), C), D)
-                    button.textContent = `${letter}) ${option.text}`; 
-                    
-                    button.dataset.index = index;
-                    button.onclick = () => selectOption(button, index);
-                    $optionsContainer.appendChild(button);
-                });
-
-                // Reset reveal button visual state
-                $revealButton.onclick = toggleAnswerVisibility;
-                $revealButton.classList.remove('bg-indigo-100', 'hover:bg-indigo-200', 'border-indigo-300');
-                $revealButton.classList.add('bg-gray-50', 'hover:bg-gray-100', 'border-gray-200');
-                $revealText.textContent = "Reveal Answers";
-                $eyeIcon.innerHTML = '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>';
-                
-            } else if (question.type === 'open') {
-                // Setup for Open Questions (Timer starts on button click)
-                $actionButton.textContent = "Start Timer";
-                $actionButton.disabled = false;
-                $actionButton.onclick = startTimer; 
-
-                // Create only the answer display placeholder (for revealing later)
-                const answerDisplay = document.createElement('p');
-                // Added extra styling for visibility when revealed
-                answerDisplay.classList.add('mt-2', 'text-xl', 'text-gray-700', 'font-semibold', 'hidden', 'text-center', 'py-4', 'border', 'border-gray-300', 'rounded-lg', 'bg-gray-50'); 
-                answerDisplay.id = 'open-answer-display';
-                answerDisplay.textContent = 'Concentrate and recall the answer!'; // Message visible before reveal
-
-                $optionsContainer.appendChild(answerDisplay);
-                $optionsContainer.classList.remove('opacity-0');
-                $optionsContainer.classList.add('opacity-100');
-            }
-        }
-
-
-        /**
-         * Handles the selection of an answer option (MCQ only).
-         */
-        function selectOption(button, index) {
-            if (!gameActive) return;
-
-            document.querySelectorAll('.option-button').forEach(btn => {
-                btn.classList.remove('selected', 'bg-blue-50', 'border-blue-500');
-                btn.classList.add('border-gray-300'); 
+            // Check Auth State
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    await handleUserLogin(user.email);
+                } else {
+                    showLogin();
+                }
             });
 
-            button.classList.add('selected');
-            button.classList.remove('border-gray-300');
+            // Fortune Cookie
+            setFortuneCookie();
+        }
+
+        async function handleUserLogin(email) {
+            const btnLoader = document.getElementById('btn-loader');
+            const btnText = document.getElementById('btn-text');
+            const signupLoader = document.getElementById('signup-btn-loader');
+            const signupText = document.getElementById('signup-btn-text');
             
-            selectedOption = index;
-            $actionButton.disabled = false;
-            $actionButton.textContent = "Submit Answer";
-        }
-        
-        /**
-         * Moves to the next question.
-         */
-        function nextQuestion() {
-            currentQuestionIndex++;
-            $actionButton.onclick = startQuiz; // Reset button action for next question
-            loadQuestion();
-        }
+            if(btnLoader) btnLoader.classList.remove('hidden');
+            if(btnText) btnText.textContent = 'Carregando...';
+            if(signupLoader) signupLoader.classList.remove('hidden');
+            if(signupText) signupText.textContent = 'Verificando...';
 
-        /**
-         * Updates the score shown in the header.
-         */
-        function updateScoreDisplay() {
-            const totalAnswered = (currentQuestionIndex + (gameActive || timerRunning ? 0 : 1));
+            try {
+                // 1. Find Student by Email
+                const studentsRef = collection(db, `artifacts/${appId}/public/data/students`);
+                const q = query(studentsRef, where("email", "==", email));
+                const querySnapshot = await getDocs(q);
 
-            if (timerRunning) {
-                $scoreDisplay.textContent = `Score: ${score}`;
-            } else if (currentQuestionIndex === 0 && !gameActive) {
-                $scoreDisplay.textContent = `Score: 0`;
-            } else {
-                 $scoreDisplay.textContent = `Score: ${score} / ${totalAnswered}`;
+                if (querySnapshot.empty) {
+                    throw new Error("Aluno não encontrado com este e-mail.");
+                }
+
+                const studentDoc = querySnapshot.docs[0];
+                currentStudent = { id: studentDoc.id, ...studentDoc.data() };
+
+                // 2. Load Academic Data (Turma or VIP)
+                await loadAcademicData();
+
+                // 3. Render UI
+                renderStudentProfile();
+                renderPEF();
+                renderGrades();
+
+                showApp();
+
+            } catch (error) {
+                console.error("Login error:", error);
+                // Only show error on the active form
+                const activeForm = document.getElementById('login-form').classList.contains('hidden') ? 'signup-error' : 'login-error';
+                const errorDiv = document.getElementById(activeForm);
+                if (errorDiv) {
+                    errorDiv.textContent = error.message;
+                    errorDiv.classList.remove('hidden');
+                }
+                
+                // If checking auth state failed (e.g. valid auth user but no student record), sign out
+                signOut(auth);
+                showLogin();
+            } finally {
+                if(btnLoader) btnLoader.classList.add('hidden');
+                if(btnText) btnText.textContent = 'Entrar';
+                if(signupLoader) signupLoader.classList.add('hidden');
+                if(signupText) signupText.textContent = 'Cadastrar';
             }
         }
 
-        /**
-         * Shows the final score screen.
-         */
-        function showFinalScreen() {
-            clearInterval(timerInterval);
-            $quizArea.classList.add('hidden');
-            $finalScreen.classList.remove('hidden');
-            const finalScoreText = `${score} out of ${quizData.length}`;
-            $finalScoreDisplay.textContent = finalScoreText;
-        }
-
-        // --- Custom Functionality ---
-        
-        /**
-         * Toggles the visibility of the answer options AND starts the timer (MCQ only).
-         */
-        function toggleAnswerVisibility() {
-            if (timerRunning) return; 
-
-            answersRevealed = !answersRevealed;
-            if (answersRevealed) {
-                // Start timer immediately upon revealing answers
-                startTimer();
-
-                $revealText.textContent = "Hide Answers";
-                $revealButton.classList.remove('bg-gray-50', 'hover:bg-gray-100', 'border-gray-200');
-                $revealButton.classList.add('bg-indigo-100', 'hover:bg-indigo-200', 'border-indigo-300');
-                // Icon for EyeOff
-                $eyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-10-7-10-7a1.17 1.17 0 0 1 1.66-1.66M20 11.23a10.07 10.07 0 0 0-3.72-2.36M12 19c.79 0 1.57-.21 2.3-.61M21 17.72c-2.45 2.72-7.44 5.28-14.88 1.4M1.66 1.66 22.34 22.34"/>';
+        async function loadAcademicData() {
+            // Check modality
+            const modalidade = (currentStudent.modalidade || 'TURMA').toUpperCase();
+            
+            if (modalidade === 'VIP' || modalidade === 'DUPLA') {
+                // Fetch VIP record
+                const vipsRef = collection(db, `artifacts/${appId}/public/data/vips`);
+                const q = query(vipsRef, where("studentId", "==", currentStudent.id));
+                const snapshot = await getDocs(q);
+                
+                if (!snapshot.empty) {
+                    // Get most recent active VIP contract
+                    const vips = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
+                    // Sort by start date desc (assuming mostly sorted)
+                    currentUnitData = vips[0]; 
+                    currentUnitData.type = 'vip';
+                }
             } else {
-                // Should not happen during active MCQ play
-                $optionsContainer.classList.remove('opacity-100');
-                $optionsContainer.classList.add('opacity-0');
-                $revealText.textContent = "Reveal Answers";
-                $revealButton.classList.remove('bg-indigo-100', 'hover:bg-indigo-200', 'border-indigo-300');
-                $revealButton.classList.add('bg-gray-50', 'hover:bg-gray-100', 'border-gray-200');
-                // Icon for Eye
-                $eyeIcon.innerHTML = '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>';
+                // Fetch Turma
+                // Find turma where studentId is in studentIds array
+                const turmasRef = collection(db, `artifacts/${appId}/public/data/turmas`);
+                const q = query(turmasRef, where("studentIds", "array-contains", currentStudent.id));
+                const snapshot = await getDocs(q);
+
+                if (!snapshot.empty) {
+                    // Assume student is in only one active class for now
+                    const turmaDoc = snapshot.docs.find(t => !t.data().finalizada);
+                    if(turmaDoc) {
+                        currentUnitData = { id: turmaDoc.id, ...turmaDoc.data(), type: 'turma' };
+                    }
+                }
+            }
+
+            // Load Attendance
+            if (currentUnitData) {
+                const attendanceRef = doc(db, `artifacts/${appId}/public/data/attendance`, currentUnitData.id);
+                const attSnap = await getDoc(attendanceRef);
+                if (attSnap.exists()) {
+                    attendanceData = attSnap.data();
+                }
             }
         }
 
-        // --- Initialization ---
-        
-        /**
-         * Resets the quiz state and starts the game.
-         */
-        function resetQuiz() {
-            currentQuestionIndex = 0;
-            score = 0;
-            gameActive = false;
-            timerRunning = false;
+        // --- RENDER FUNCTIONS ---
+
+        function renderStudentProfile() {
+            // Header
+            document.getElementById('header-name').textContent = currentStudent.name.split(' ')[0]; // First name
+            document.getElementById('header-initials').textContent = getInitials(currentStudent.name);
             
-            // Shuffle questions for random order
-            shuffleArray(quizData); 
+            // Card
+            document.getElementById('student-modalidade').textContent = currentStudent.modalidade || 'TURMA';
+            document.getElementById('student-level').textContent = currentUnitData?.level || currentStudent.currentLevel || 'Nível não definido';
             
-            $quizArea.classList.remove('hidden');
-            $finalScreen.classList.add('hidden');
-            $actionButton.textContent = "Start Quiz";
-            $actionButton.onclick = startQuiz;
-            $questionCounter.textContent = `Question 1 of ${quizData.length}`;
-            $questionText.textContent = "Press 'Start Quiz' to begin the competition!";
-            $optionsContainer.innerHTML = '';
-            $optionsContainer.classList.remove('opacity-100');
-            $optionsContainer.classList.add('opacity-0');
-            $revealButton.classList.add('hidden');
-            $timerText.classList.add('opacity-0');
-            $progressBarContainer.classList.add('opacity-0');
-            updateScoreDisplay();
+            const teacherName = currentUnitData?.teacherName || 'Não atribuído';
+            document.getElementById('student-teacher').textContent = teacherName;
         }
 
-        function startQuiz() {
-             gameActive = false; // Reset gameActive until timer starts
-             loadQuestion();
+        function renderPEF() {
+            const grid = document.getElementById('pef-grid');
+            grid.innerHTML = '';
+            
+            let presentCount = 0;
+            let absentCount = 0;
+            let totalClasses = 0;
+
+            const lessons = attendanceData?.lessons || {};
+
+            // Render 40 lessons grid
+            for (let i = 1; i <= 40; i++) {
+                const lesson = lessons[i];
+                let status = ''; // P, F, PP, or empty
+                let date = '';
+
+                if (lesson && lesson.date) {
+                    // Check student status
+                    if (currentUnitData.type === 'turma') {
+                        status = lesson.students?.[currentStudent.id] || '';
+                    } else {
+                        // VIP usually has one student, or check specific ID
+                        // VIP structure might be simpler or same as turma
+                        status = lesson.students?.[currentStudent.id] || ''; 
+                        // Fallback for older VIP structure if needed
+                        if(!status && lesson.status) status = lesson.status; 
+                    }
+                    date = lesson.date.split('-').reverse().slice(0,2).join('/'); // DD/MM
+                }
+
+                // Stats
+                if (status === 'P') presentCount++;
+                if (status === 'F') absentCount++;
+                if (status === 'PP') presentCount += 0.5; // Partial presence
+                if (status) totalClasses++;
+
+                // Visuals
+                let bgClass = 'bg-stone-100 text-stone-400';
+                let borderClass = 'border-transparent';
+                
+                if (status === 'P') { bgClass = 'bg-green-100 text-green-700 border-green-200'; }
+                else if (status === 'F') { bgClass = 'bg-red-100 text-red-700 border-red-200'; }
+                else if (status === 'PP') { bgClass = 'bg-yellow-100 text-yellow-700 border-yellow-200'; }
+
+                const cell = document.createElement('div');
+                cell.className = `aspect-square rounded-lg flex flex-col items-center justify-center text-xs font-bold border ${bgClass}`;
+                cell.innerHTML = `
+                    <span>${i}</span>
+                    <span class="text-[9px] font-normal opacity-70">${status || '-'}</span>
+                `;
+                grid.appendChild(cell);
+            }
+
+            // Update stats
+            document.getElementById('pef-present-count').textContent = presentCount;
+            document.getElementById('pef-absent-count').textContent = absentCount;
+            
+            // Home Stats
+            document.getElementById('stat-classes').textContent = totalClasses;
+            const percentage = totalClasses > 0 ? Math.round((presentCount / totalClasses) * 100) : 0;
+            document.getElementById('stat-attendance').textContent = `${percentage}%`;
         }
 
-        // 🌟 Modified onload to show login screen first
-        window.onload = () => {
-             $quizContainer.classList.add('hidden'); // Ensure quiz is hidden initially
-             $loginScreen.classList.remove('hidden');
-             $passwordInput.focus();
-        };
+        function renderGrades() {
+            let grades = {};
+            let obs = "";
+
+            if (currentUnitData?.type === 'turma') {
+                grades = currentUnitData.studentGrades?.[currentStudent.id] || {};
+                obs = grades.observacao || "";
+            } else if (currentUnitData?.type === 'vip') {
+                grades = currentUnitData.grades || {};
+                obs = grades.observacao || grades.observacoes || "";
+            }
+
+            // Default zero
+            const getGrade = (val) => parseFloat(val) || 0;
+
+            const scores = [
+                { label: 'Midterm', val: getGrade(grades.midtermTest), max: 20 },
+                { label: 'Listening', val: getGrade(grades.listeningTest), max: 20 },
+                { label: 'Grammar', val: getGrade(grades.grammarTest), max: 20 },
+                { label: 'Oral', val: getGrade(grades.oralTest), max: 20 },
+                { label: 'Participation', val: getGrade(grades.participacao), max: 10 },
+                { label: 'Attendance', val: getGrade(grades.assiduidade), max: 10 },
+            ];
+
+            const total = scores.reduce((a, b) => a + b.val, 0);
+            
+            // Final Grade Display
+            document.getElementById('final-grade').textContent = total.toFixed(1);
+            
+            const badge = document.getElementById('approval-badge');
+            if (total >= 70) {
+                badge.textContent = "Aprovado";
+                badge.className = "inline-block mt-3 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold uppercase tracking-wider";
+            } else if (total > 0) {
+                badge.textContent = "Em andamento";
+                badge.className = "inline-block mt-3 px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold uppercase tracking-wider";
+            } else {
+                badge.textContent = "Pendente";
+                badge.className = "inline-block mt-3 px-3 py-1 bg-stone-100 text-stone-500 rounded-full text-xs font-bold uppercase tracking-wider";
+            }
+
+            // List
+            const list = document.getElementById('grades-list');
+            list.innerHTML = scores.map(s => {
+                const percent = (s.val / s.max) * 100;
+                return `
+                <div>
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="font-medium text-stone-600">${s.label}</span>
+                        <span class="font-bold text-stone-800">${s.val}/${s.max}</span>
+                    </div>
+                    <div class="w-full bg-stone-100 rounded-full h-2.5 overflow-hidden">
+                        <div class="bg-[#F1D24B] h-2.5 rounded-full" style="width: ${percent}%"></div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+
+            // Observações
+            const notesContainer = document.getElementById('teacher-notes-container');
+            if (obs) {
+                document.getElementById('teacher-notes').textContent = obs;
+                notesContainer.classList.remove('hidden');
+            } else {
+                notesContainer.classList.add('hidden');
+            }
+        }
+
+        // --- UTILS ---
+
+        function getInitials(name) {
+            if (!name) return 'AL';
+            const parts = name.trim().split(' ');
+            if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+
+        function setFortuneCookie() {
+            const phrases = [
+                "O sucesso é a soma de pequenos esforços repetidos dia após dia.",
+                "Acredite em si mesmo e tudo será possível.",
+                "Cada novo dia é uma oportunidade de crescer e aprender.",
+                "A persistência é o caminho do êxito.",
+                "O aprendizado é um tesouro que seguirá seu dono por toda parte.",
+                "Não pare até se orgulhar."
+            ];
+            const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+            document.getElementById('fortune-text').textContent = `"${randomPhrase}"`;
+        }
+
+        // --- UI HANDLERS ---
+
+        function showLogin() {
+            document.getElementById('login-view').classList.remove('hidden');
+            document.getElementById('app-view').classList.add('hidden');
+        }
+
+        function showApp() {
+            document.getElementById('login-view').classList.add('hidden');
+            document.getElementById('app-view').classList.remove('hidden');
+        }
+
+        window.toggleAuthMode = function(mode) {
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            const errorDivs = document.querySelectorAll('#login-error, #signup-error');
+            
+            // Clear errors
+            errorDivs.forEach(div => div.classList.add('hidden'));
+
+            if (mode === 'signup') {
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+            } else {
+                signupForm.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+            }
+        }
+
+        window.switchTab = function(tabName) {
+            // Hide all sections
+            ['home', 'pef', 'grades'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                document.getElementById(`nav-${t}`).classList.remove('active');
+            });
+
+            // Show selected
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            document.getElementById(`nav-${tabName}`).classList.add('active');
+            
+            // Scroll to top
+            document.getElementById('main-content').scrollTo(0,0);
+        }
+
+        // --- EVENT LISTENERS ---
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorDiv = document.getElementById('login-error');
+            
+            errorDiv.classList.add('hidden');
+
+            try {
+                // Sign in with Firebase Auth (users must exist in Auth)
+                await signInWithEmailAndPassword(auth, email, password);
+                // Listener will handle redirection
+            } catch (error) {
+                console.error(error);
+                errorDiv.textContent = "E-mail ou senha inválidos. Tente novamente.";
+                errorDiv.classList.remove('hidden');
+            }
+        });
+
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const errorDiv = document.getElementById('signup-error');
+            const loader = document.getElementById('signup-btn-loader');
+            const btnText = document.getElementById('signup-btn-text');
+            
+            errorDiv.classList.add('hidden');
+            loader.classList.remove('hidden');
+            btnText.textContent = 'Verificando...';
+
+            try {
+                // 1. Verify if email exists in students collection first
+                const studentsRef = collection(db, `artifacts/${appId}/public/data/students`);
+                const q = query(studentsRef, where("email", "==", email));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    throw new Error("Este e-mail não está cadastrado como aluno. Contate a secretaria.");
+                }
+
+                // 2. Create Authentication User
+                await createUserWithEmailAndPassword(auth, email, password);
+                
+                // Success will trigger onAuthStateChanged
+            } catch (error) {
+                console.error(error);
+                let msg = error.message;
+                if (error.code === 'auth/email-already-in-use') {
+                    msg = "Este e-mail já possui cadastro. Faça login.";
+                } else if (error.code === 'auth/weak-password') {
+                    msg = "A senha deve ter pelo menos 6 caracteres.";
+                }
+                errorDiv.textContent = msg;
+                errorDiv.classList.remove('hidden');
+            } finally {
+                loader.classList.add('hidden');
+                btnText.textContent = 'Cadastrar';
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            if(confirm("Deseja sair do portal?")) {
+                signOut(auth);
+            }
+        });
+
+        // Initialize
+        initApp();
 
     </script>
 </body>
