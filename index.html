@@ -182,6 +182,11 @@
     <!-- MAIN APP CONTAINER (Hidden initially) -->
     <div id="app-view" class="hidden flex-1 flex flex-col h-full bg-stone-50">
         
+        <!-- ADMIN BANNER (Hidden by default) -->
+        <div id="admin-banner" class="hidden bg-stone-800 text-white text-xs py-1 px-4 text-center font-bold">
+            MODO DE VISUALIZAÇÃO: ADMINISTRADOR
+        </div>
+
         <!-- HEADER -->
         <header class="bg-white px-6 pt-12 pb-4 shadow-sm z-10 flex justify-between items-center">
             <div class="flex items-center gap-3">
@@ -349,13 +354,14 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDocs, doc, getDoc, limit } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
         // Global State
         let db, auth;
         let currentStudent = null;
         let currentUnitData = null; // Turma or VIP data
         let attendanceData = null;
+        let isAdminView = false;
         
         // Use environment app ID if available, fallback to specific ID for demo
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'hub-gestao-slap';
@@ -401,17 +407,39 @@
             if(signupText) signupText.textContent = 'Verificando...';
 
             try {
-                // 1. Find Student by Email
+                // 1. Tentar encontrar como Aluno
                 const studentsRef = collection(db, `artifacts/${appId}/public/data/students`);
                 const q = query(studentsRef, where("email", "==", email));
                 const querySnapshot = await getDocs(q);
 
-                if (querySnapshot.empty) {
-                    throw new Error("Aluno não encontrado com este e-mail.");
-                }
+                if (!querySnapshot.empty) {
+                    // É aluno
+                    const studentDoc = querySnapshot.docs[0];
+                    currentStudent = { id: studentDoc.id, ...studentDoc.data() };
+                    isAdminView = false;
+                } else {
+                    // 2. Tentar encontrar como Colaborador (Admin/Teacher)
+                    const collabRef = collection(db, `artifacts/${appId}/public/data/collaborators`);
+                    const qCollab = query(collabRef, where("email", "==", email));
+                    const collabSnapshot = await getDocs(qCollab);
 
-                const studentDoc = querySnapshot.docs[0];
-                currentStudent = { id: studentDoc.id, ...studentDoc.data() };
+                    if (!collabSnapshot.empty) {
+                        // É Admin/Colaborador - Carregar um aluno de exemplo para visualização
+                        // Tenta encontrar o primeiro aluno ativo
+                        const sampleQ = query(studentsRef, limit(1));
+                        const sampleSnap = await getDocs(sampleQ);
+
+                        if (!sampleSnap.empty) {
+                            const sampleDoc = sampleSnap.docs[0];
+                            currentStudent = { id: sampleDoc.id, ...sampleDoc.data() };
+                            isAdminView = true;
+                        } else {
+                             throw new Error("Acesso de admin permitido, mas nenhum aluno encontrado no banco de dados para visualização.");
+                        }
+                    } else {
+                        throw new Error("Usuário não encontrado. Verifique se o e-mail está cadastrado como aluno ou colaborador.");
+                    }
+                }
 
                 // 2. Load Academic Data (Turma or VIP)
                 await loadAcademicData();
@@ -490,6 +518,15 @@
         // --- RENDER FUNCTIONS ---
 
         function renderStudentProfile() {
+            // Admin Banner
+            const adminBanner = document.getElementById('admin-banner');
+            if (isAdminView) {
+                adminBanner.classList.remove('hidden');
+                adminBanner.textContent = `MODO DE VISUALIZAÇÃO (ADMIN) - Vendo como: ${currentStudent.name}`;
+            } else {
+                adminBanner.classList.add('hidden');
+            }
+
             // Header
             document.getElementById('header-name').textContent = currentStudent.name.split(' ')[0]; // First name
             document.getElementById('header-initials').textContent = getInitials(currentStudent.name);
