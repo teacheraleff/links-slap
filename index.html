@@ -1,813 +1,1619 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Portal do Aluno | SLAP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SLAP | Grammar Training Track</title>
+    <!-- SLAP Favicon -->
     <link rel="icon" type="image/png" href="https://res.cloudinary.com/dqfi22uz0/image/upload/v1749543469/SLAP_FAVICON_AMARELO_coilvj.png">
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: DM Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=TASA+Orbiter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     
     <style>
+        /* Applying default font and colors */
         body {
-            font-family: 'TASA Orbiter', sans-serif;
-            background-color: #f8fafc; /* stone-50 */
-            color: #1c1917; /* stone-900 */
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        /* Cores da Marca */
-        :root {
-            --slap-yellow: #F1D24B;
-            --slap-orange: #FF5C3D;
-            --slap-blue: #84C7DF;
-            --slap-purple: #8671D1;
-        }
-
-        .bg-slap-yellow { background-color: var(--slap-yellow); }
-        .text-slap-yellow { color: var(--slap-yellow); }
-        .border-slap-yellow { border-color: var(--slap-yellow); }
-
-        .bg-slap-blue { background-color: var(--slap-blue); }
-        .text-slap-blue { color: var(--slap-blue); }
-
-        /* Utilitários */
-        .card-shadow {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        }
-
-        .bottom-nav-item {
-            position: relative;
-            transition: all 0.3s ease;
+            font-family: 'DM Sans', sans-serif;
+            background-color: #f4f7f9; /* Soft gray background */
+            min-height: 100vh;
         }
         
-        .bottom-nav-item.active {
-            color: #F1D24B;
+        /* Main container for centering and width limit */
+        #main-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem;
         }
 
-        .bottom-nav-item.active::after {
-            content: '';
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 4px;
-            background-color: #F1D24B;
-            border-radius: 0 0 4px 4px;
+        /* Primary Action Button Styles (SLAP Yellow) */
+        .action-button {
+             background-color: #F1D24B; 
+             color: #44403c; /* stone-800 */
+             padding: 0.75rem 1.5rem; 
+             border-radius: 0.75rem; 
+             font-weight: 700; 
+             cursor: pointer; 
+             transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+             display: inline-flex;
+             align-items: center;
+             justify-content: center; 
+             gap: 0.5rem;
+             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-
-        /* Animações */
-        .fade-in {
-            animation: fadeIn 0.3s ease-in-out;
+        .action-button:hover:not(:disabled) {
+            background-color: #eab308; /* Darker Yellow */
+            transform: translateY(-2px);
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        
+        /* Secondary Button Styles (Dark) - Study/Back Button (kept for back button) */
+        .secondary-button {
+            background-color: #44403c; /* stone-800 */
+            color: white;
+            padding: 0.75rem 1.5rem; 
+            border-radius: 0.75rem; 
+            font-weight: 500; 
+            cursor: pointer; 
+            transition: background-color 0.2s, transform 0.2s;
+            box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
-
-        /* Scroll horizontal suave */
-        .horizontal-scroll {
+        .secondary-button:hover:not(:disabled) {
+            background-color: #292524; /* stone-900 */
+            transform: translateY(-1px);
+        }
+        
+        /* Option Button Styles */
+        .option-button {
+            background-color: white;
+            border: 2px solid #e5e7eb;
+            color: #44403c;
+            text-align: left;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            width: 100%;
+            transition: all 0.2s;
+            cursor: pointer;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
             display: flex;
-            overflow-x: auto;
+            align-items: center;
             gap: 1rem;
-            padding-bottom: 1rem;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
         }
-        .horizontal-scroll::-webkit-scrollbar {
-            display: none;
+        .option-button:hover:not(:disabled) {
+            border-color: #8671d1;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+        .option-button:disabled {
+            cursor: not-allowed;
         }
 
-        /* Status Badges */
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 9999px;
+        /* Option Letter Prefix Style (A, B, C, D) */
+        .option-prefix {
+            font-weight: 700;
+            color: #8671d1; /* SLAP Purple */
+            min-width: 1.5rem;
+            text-align: center;
+        }
+        
+        /* Module Tag Style - SLAP PURPLE */
+        .module-tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background-color: #8671d1; /* SLAP Purple */
+            color: white;
             font-size: 0.75rem;
             font-weight: 700;
-            text-transform: uppercase;
-        }
-        .status-p { background-color: #dcfce7; color: #166534; }
-        .status-f { background-color: #fee2e2; color: #991b1b; }
-        .status-pp { background-color: #fef3c7; color: #92400e; }
-        .status-empty { background-color: #f3f4f6; color: #9ca3af; }
-
-        /* Loader */
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-radius: 50%;
-            border-top: 3px solid #F1D24B;
-            width: 24px;
-            height: 24px;
-            -webkit-animation: spin 1s linear infinite; /* Safari */
-            animation: spin 1s linear infinite;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.05em;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        /* Filter Button Style */
+        .filter-button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            border: 1px solid transparent;
         }
+        .filter-button.active {
+            background-color: #8671d1; /* SLAP Purple */
+            color: white;
+            border-color: #6d5b9b;
+        }
+        .filter-button:not(.active) {
+            background-color: white;
+            color: #44403c;
+            border-color: #ddd;
+        }
+        .filter-button:not(.active):hover {
+            background-color: #efefef;
+        }
+        
+
+        /* Generator Screen Style (Modal-like view) */
+        .generator-view-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        /* Question Box Style - SLAP BLUE (Content) */
+        .challenge-box {
+            background-color: #eef2ff; /* Soft background maintained */
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border-left: 5px solid #84c7df; /* SLAP Blue for border */
+        }
+        
+        /* Rationale Display Style */
+        #rationale-content {
+            background-color: #fef3c7; /* Yellow background */
+            color: #78350f; /* Dark brown text */
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border-left: 5px solid #eab308; /* Darker yellow border */
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* --- MODULE CARD STYLES (Grid Layout) --- */
+
+        .level-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); 
+            transition: all 0.2s ease-in-out;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%; /* Ensures all cards in the grid are the same height */
+        }
+        .level-card:hover {
+            transform: scale(1.02); 
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            border-color: #8671d1; /* Purple border on hover */
+        }
+
+        /* Login Gate Specific Styles */
+        #login-gate {
+            background-color: #44403c; /* stone-800 */
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 2rem;
+        }
+        .login-card {
+            background-color: white;
+            color: #44403c;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            width: 100%;
+        }
+        .login-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+        .login-button {
+            background-color: #F1D24B;
+            color: #44403c;
+            width: 100%;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            transition: background-color 0.2s;
+        }
+        .login-button:hover {
+            background-color: #eab308;
+        }
+        
+        /* Specific style for TBA input field */
+        #tba-answer-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #8671d1;
+            border-radius: 0.5rem;
+            font-size: 1.1rem;
+            text-align: center;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        #tba-answer-input:focus {
+            outline: none;
+            border-color: #5d4a8e;
+            box-shadow: 0 0 0 3px rgba(134, 113, 209, 0.2);
+        }
+
+        /* Study View */
+        #video-player {
+            width: 100%;
+            height: 450px;
+            border-radius: 0.75rem;
+            background-color: #292524;
+            margin-bottom: 1.5rem;
+            /* Ensure inner content fills the space */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #video-player iframe, #video-player video {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 0.75rem;
+        }
+        
     </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden">
-
-    <!-- LOGIN SCREEN -->
-    <div id="login-view" class="fixed inset-0 z-50 bg-white flex flex-col items-center justify-center p-6 fade-in">
-        <div class="w-full max-w-sm">
-            <div class="text-center mb-10">
-                <img src="https://res.cloudinary.com/dqfi22uz0/image/upload/v1751163691/SLAP_TIPO_PRETO_1_xarnpe.png" alt="SLAP Logo" class="h-16 mx-auto mb-4">
-                <h1 class="text-2xl font-bold text-stone-800">Portal do Aluno</h1>
-                <p class="text-stone-500 text-sm mt-1">Acesse suas aulas, notas e frequência</p>
-            </div>
-
-            <!-- Login Form -->
-            <form id="login-form" class="space-y-5">
-                <div>
-                    <label class="block text-sm font-semibold text-stone-700 mb-1">E-mail</label>
-                    <input type="email" id="login-email" class="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-[#F1D24B] focus:border-transparent transition-all" placeholder="seu@email.com" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-stone-700 mb-1">Senha</label>
-                    <input type="password" id="login-password" class="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-[#F1D24B] focus:border-transparent transition-all" placeholder="••••••••" required>
-                </div>
-                
-                <div id="login-error" class="hidden p-3 bg-red-50 text-red-600 text-sm rounded-lg text-center font-medium"></div>
-
-                <button type="submit" class="w-full py-3.5 bg-[#F1D24B] hover:bg-[#eac32a] text-stone-900 font-bold rounded-xl shadow-lg shadow-yellow-100 transition-all transform active:scale-95 flex items-center justify-center">
-                    <span id="btn-text">Entrar</span>
-                    <div id="btn-loader" class="loader hidden ml-2"></div>
-                </button>
-                
-                <button type="button" onclick="toggleAuthMode('signup')" class="w-full text-sm text-stone-500 hover:text-[#F1D24B] font-medium transition-colors">
-                    Primeiro acesso? Cadastre sua senha
-                </button>
-            </form>
-
-            <!-- Signup Form (Initially Hidden) -->
-            <form id="signup-form" class="space-y-5 hidden">
-                <div class="text-center mb-2">
-                    <h2 class="text-lg font-bold text-stone-800">Criar Acesso</h2>
-                    <p class="text-xs text-stone-500">Use o e-mail cadastrado na sua matrícula</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-stone-700 mb-1">E-mail</label>
-                    <input type="email" id="signup-email" class="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-[#F1D24B] focus:border-transparent transition-all" placeholder="seu@email.com" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-stone-700 mb-1">Criar Senha</label>
-                    <input type="password" id="signup-password" class="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-[#F1D24B] focus:border-transparent transition-all" placeholder="Mínimo 6 caracteres" minlength="6" required>
-                </div>
-                
-                <div id="signup-error" class="hidden p-3 bg-red-50 text-red-600 text-sm rounded-lg text-center font-medium"></div>
-
-                <button type="submit" class="w-full py-3.5 bg-stone-800 hover:bg-stone-900 text-white font-bold rounded-xl shadow-lg transition-all transform active:scale-95 flex items-center justify-center">
-                    <span id="signup-btn-text">Cadastrar</span>
-                    <div id="signup-btn-loader" class="loader hidden ml-2" style="border-top-color: white;"></div>
-                </button>
-                
-                <button type="button" onclick="toggleAuthMode('login')" class="w-full text-sm text-stone-500 hover:text-[#F1D24B] font-medium transition-colors">
-                    Já tenho conta. Fazer Login
-                </button>
-            </form>
+<body>
+    
+    <!-- LOGIN GATE -->
+    <div id="login-gate">
+        <div class="login-card text-center">
+            <h1 class="text-3xl font-bold mb-4 text-[#8671d1]">SLAP Grammar Track Access</h1>
+            <p class="text-lg font-medium mb-6">Para entrar, adivinhe o nome da cantora que estou pensando:</p>
             
-            <p class="mt-8 text-center text-xs text-stone-400">
-                Problemas no acesso? Contate a secretaria.
-            </p>
+            <form id="login-form" onsubmit="checkPassword(event)">
+                <label for="password-input" class="block text-left font-semibold text-sm mb-1">
+                    Cantora (em minúsculas):
+                </label>
+                <input 
+                    type="password" 
+                    id="password-input" 
+                    class="login-input" 
+                    placeholder="ex: shakira" 
+                    required
+                >
+                <button type="submit" class="login-button">
+                    Entrar na Trilha Gramatical
+                </button>
+                <p id="login-feedback" class="mt-4 text-red-600 hidden font-bold">Cantora incorreta. Tente novamente!</p>
+            </form>
         </div>
     </div>
 
-    <!-- MAIN APP CONTAINER (Hidden initially) -->
-    <div id="app-view" class="hidden flex-1 flex flex-col h-full bg-stone-50">
-        
-        <!-- ADMIN BANNER (Hidden by default) -->
-        <div id="admin-banner" class="hidden bg-stone-800 text-white text-xs py-1 px-4 text-center font-bold">
-            MODO DE VISUALIZAÇÃO: ADMINISTRADOR
-        </div>
 
-        <!-- HEADER -->
-        <header class="bg-white px-6 pt-12 pb-4 shadow-sm z-10 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center border-2 border-white shadow-sm overflow-hidden">
-                    <img id="header-avatar" src="" class="w-full h-full object-cover hidden" alt="Avatar">
-                    <span id="header-initials" class="text-[#F1D24B] font-bold text-sm">AL</span>
-                </div>
-                <div>
-                    <p class="text-xs text-stone-500 font-medium">Olá,</p>
-                    <h2 id="header-name" class="text-lg font-bold text-stone-800 leading-tight">Aluno</h2>
-                </div>
-            </div>
-            <button id="logout-btn" class="p-2 bg-stone-100 rounded-full text-stone-500 hover:text-red-500 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-            </button>
+    <div id="main-wrapper" class="hidden">
+        
+        <!-- HEADER (Logo and Title) -->
+        <header class="py-6 border-b border-stone-200 mb-8">
+            <img src="https://res.cloudinary.com/dqfi22uz0/image/upload/v1759294967/SLAP_TIPO_PRETO_2_kismg9.png" alt="SLAP Logo Preto" class="w-32 h-auto mx-auto mb-2">
+            <!-- TITLE UPDATED TO SLAP GRAMMAR TRAINING TRACK -->
+            <h1 class="text-3xl font-bold text-center text-stone-800">SLAP Grammar Training Track</h1>
+            <p class="text-center text-stone-500">Módulos de Certificação Estrutural (Foco em Accuracy)</p>
         </header>
 
-        <!-- CONTENT AREA (Scrollable) -->
-        <main id="main-content" class="flex-1 overflow-y-auto pb-24 p-6">
+        <!-- DASHBOARD VIEW -->
+        <div id="dashboard-view" class="w-full">
+            <h2 class="text-xl font-semibold text-stone-700 mb-6 text-center sm:text-left" id="dashboard-title">Selecione o Módulo Gramatical:</h2>
             
-            <!-- HOME SECTION -->
-            <section id="tab-home" class="space-y-6 fade-in">
-                <!-- Info Card -->
-                <div class="bg-gradient-to-br from-[#1c1917] to-[#2d2a28] rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#F1D24B] rounded-full filter blur-3xl opacity-10 transform translate-x-10 -translate-y-10"></div>
-                    
-                    <div class="relative z-10">
-                        <span id="student-modalidade" class="inline-block px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-semibold mb-4 border border-white/20">VIP</span>
-                        
-                        <div class="mb-6">
-                            <p class="text-stone-400 text-xs mb-1 uppercase tracking-wider">Nível Atual</p>
-                            <h3 id="student-level" class="text-3xl font-bold text-[#F1D24B]">B1 Intermediário</h3>
-                        </div>
+            <!-- NEW: Filter Buttons -->
+            <div id="filter-container" class="mb-8 flex flex-wrap gap-3 justify-start">
+                <!-- Buttons will be injected here by JS -->
+            </div>
 
-                        <div class="flex justify-between items-end">
-                            <div>
-                                <p class="text-stone-400 text-xs mb-1">Professor</p>
-                                <p id="student-teacher" class="font-medium">Carregando...</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-stone-400 text-xs mb-1">Status</p>
-                                <div class="flex items-center gap-1.5">
-                                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                                    <span class="font-medium">Ativo</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <!-- NEW: Grid Container for Modules -->
+            <div id="level-cards-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 pb-16">
+                <!-- Cards will be injected here by JS -->
+            </div>
+        </div>
 
-                <!-- Quick Stats -->
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-white p-4 rounded-xl shadow-sm border border-stone-100 flex flex-col items-center justify-center text-center">
-                        <div class="w-10 h-10 rounded-full bg-blue-50 text-[#84C7DF] flex items-center justify-center mb-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        </div>
-                        <p class="text-2xl font-bold text-stone-800" id="stat-attendance">0%</p>
-                        <p class="text-xs text-stone-500 font-medium">Assiduidade</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-xl shadow-sm border border-stone-100 flex flex-col items-center justify-center text-center">
-                        <div class="w-10 h-10 rounded-full bg-purple-50 text-[#8671D1] flex items-center justify-center mb-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        </div>
-                        <p class="text-2xl font-bold text-stone-800" id="stat-classes">0</p>
-                        <p class="text-xs text-stone-500 font-medium">Aulas Feitas</p>
-                    </div>
-                </div>
+        <!-- GENERATOR VIEW (PRACTICE - QUIZ) -->
+        <div id="generator-view" class="hidden w-full">
+            <!-- Back to Dashboard Button -->
+            <button class="secondary-button mb-6" onclick="showDashboard()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                <span id="back-button-text">Voltar para Módulos</span>
+            </button>
 
-                <!-- Biscoito da Sorte -->
-                <div class="bg-[#FFFBEB] border border-[#F1D24B]/30 p-5 rounded-xl relative">
-                    <div class="flex gap-4">
-                        <div class="text-3xl">🥠</div>
-                        <div>
-                            <h4 class="font-bold text-stone-800 mb-1">Quote do Dia</h4>
-                            <p id="fortune-text" class="text-sm text-stone-600 italic">"O aprendizado é a única coisa que a mente nunca se cansa, nunca tem medo e nunca se arrepende."</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- PEF SECTION -->
-            <section id="tab-pef" class="hidden space-y-6 fade-in">
-                <h2 class="text-xl font-bold text-stone-800">Frequência (PEF)</h2>
+            <div class="generator-view-container">
+                <h2 class="text-3xl font-bold text-stone-800 mb-4">Módulo: <span id="current-level-display" class="text-[#84c7df]"></span></h2>
                 
-                <div class="bg-white rounded-xl shadow-sm border border-stone-100 overflow-hidden">
-                    <div class="p-4 border-b border-stone-100 bg-stone-50 flex justify-between items-center">
-                        <span class="text-sm font-semibold text-stone-600">Registro de Aulas</span>
-                        <div class="flex gap-2 text-xs">
-                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500"></span> P</span>
-                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-500"></span> F</span>
-                        </div>
+                <!-- ALERT FEEDBACK MESSAGE -->
+                <div id="feedback-alert" class="hidden p-3 mb-6 rounded-lg text-white font-semibold transition-all duration-300"></div>
+
+                <!-- QUESTION/CHALLENGE BOX -->
+                <div class="challenge-box mb-8">
+                    <div class="flex justify-between items-start">
+                        <p class="text-sm font-semibold text-indigo-700 mb-2" id="question-label">PERGUNTA ATUAL:</p>
                     </div>
-                    
-                    <div id="pef-grid" class="p-4 grid grid-cols-5 gap-3">
-                        <!-- Grid generated via JS -->
-                    </div>
+
+                    <p id="main-question" class="text-xl font-bold text-indigo-900">Clique em "Gerar Próxima Pergunta" para Iniciar!</p>
                 </div>
 
-                <!-- Legend -->
-                <div class="grid grid-cols-1 gap-3">
-                    <div class="bg-white p-3 rounded-lg border-l-4 border-green-500 shadow-sm">
-                        <p class="text-xs text-stone-500">Aulas Presentes</p>
-                        <p class="text-lg font-bold text-stone-800" id="pef-present-count">0</p>
-                    </div>
-                    <div class="bg-white p-3 rounded-lg border-l-4 border-red-500 shadow-sm">
-                        <p class="text-xs text-stone-500">Faltas</p>
-                        <p class="text-lg font-bold text-stone-800" id="pef-absent-count">0</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- GRADES SECTION -->
-            <section id="tab-grades" class="hidden space-y-6 fade-in">
-                <h2 class="text-xl font-bold text-stone-800">Boletim</h2>
-
-                <div class="bg-white rounded-xl shadow-sm border border-stone-100 p-6 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-purple-50 rounded-bl-full -mr-4 -mt-4 z-0"></div>
-                    
-                    <div class="relative z-10 text-center mb-8">
-                        <p class="text-sm text-stone-500 uppercase tracking-wide font-medium">Nota Final</p>
-                        <div class="flex justify-center items-baseline gap-1 mt-2">
-                            <span id="final-grade" class="text-5xl font-extrabold text-[#8671D1]">0.0</span>
-                            <span class="text-stone-400 font-medium">/ 100</span>
-                        </div>
-                        <span id="approval-badge" class="inline-block mt-3 px-3 py-1 bg-stone-100 text-stone-500 rounded-full text-xs font-bold uppercase tracking-wider">
-                            Pendente
-                        </span>
-                    </div>
-
-                    <div class="space-y-4 relative z-10" id="grades-list">
-                        <!-- Grades injected via JS -->
-                    </div>
+                <!-- OPTIONS / INPUT CONTAINER -->
+                <div id="options-container" class="mt-8 space-y-3">
+                    <!-- Options or TBA input injected here -->
                 </div>
 
-                <div id="teacher-notes-container" class="hidden bg-yellow-50 border border-yellow-200 p-5 rounded-xl">
-                    <h4 class="font-bold text-yellow-800 mb-2 flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
-                        Observação do Professor
-                    </h4>
-                    <p id="teacher-notes" class="text-sm text-stone-700 leading-relaxed italic">
-                        
-                    </p>
+                <!-- Next Question Button & Rationale -->
+                <div id="rationale-display" class="hidden mt-6">
+                    <div id="rationale-content" class="mb-4">
+                        <!-- Rationale Text injected here -->
+                    </div>
+                    <button id="next-question-btn" class="action-button mt-0 w-full" onclick="loadNextQuestion()" disabled><span id="next-button-text">Gerar Próxima Pergunta</span></button>
                 </div>
-            </section>
 
-        </main>
-
-        <!-- BOTTOM NAVIGATION -->
-        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-stone-200 px-6 py-3 flex justify-between items-center z-40 pb-safe">
-            <button onclick="switchTab('home')" class="bottom-nav-item active flex flex-col items-center gap-1 text-stone-400 p-2" id="nav-home">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                <span class="text-[10px] font-bold">Início</span>
-            </button>
-            <button onclick="switchTab('pef')" class="bottom-nav-item flex flex-col items-center gap-1 text-stone-400 p-2" id="nav-pef">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-                <span class="text-[10px] font-bold">Aulas</span>
-            </button>
-            <button onclick="switchTab('grades')" class="bottom-nav-item flex flex-col items-center gap-1 text-stone-400 p-2" id="nav-grades">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                <span class="text-[10px] font-bold">Notas</span>
-            </button>
-        </nav>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, getDocs, doc, getDoc, limit } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
-
-        // Global State
-        let db, auth;
-        let currentStudent = null;
-        let currentUnitData = null; // Turma or VIP data
-        let attendanceData = null;
-        let isAdminView = false;
+            </div>
+        </div>
         
-        // Use environment app ID if available, fallback to specific ID for demo
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'hub-gestao-slap';
+        <!-- STUDY VIEW (NEW) -->
+        <div id="study-view" class="hidden w-full">
+             <button class="secondary-button mb-6" onclick="showDashboard()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                Voltar para Módulos
+            </button>
+            
+            <div class="generator-view-container">
+                 <h2 class="text-3xl font-bold text-stone-800 mb-4">Estudo: <span id="study-module-display" class="text-[#8671d1]"></span></h2>
+                 
+                 <div id="video-player">
+                      <!-- Content will be loaded here dynamically (iframe or video tag) -->
+                 </div>
+            </div>
+        </div>
 
-        // --- CORE FUNCTIONS ---
 
-        async function initApp() {
-            // FIX: Retrieve config from environment variable
-            let firebaseConfig;
-            try {
-                firebaseConfig = JSON.parse(__firebase_config);
-            } catch (error) {
-                console.error("Erro ao carregar configuração do Firebase:", error);
+    </div>
+    
+    <script>
+        // --- CONSTANTS AND GLOBAL GAME STATE ---
+        let currentModule = null; // Current module name (string)
+        let questionsPool = []; // Pool of remaining questions in the current session (prevents repetition)
+        let currentQuestion = null; // CURRENTLY DISPLAYED QUESTION
+        let answerSubmitted = false;
+        let currentFilter = 'ALL'; // Tracks the current filter tag (e.g., 'STARTER 1', 'ALL')
+        
+        // Fixed order of levels for proper numbering
+        const LEVEL_ORDER = [
+            'STARTER 1', 'STARTER 2', 
+            'FRESHMAN 1', 'FRESHMAN 2', 
+            'SOPHOMORE 1', 'SOPHOMORE 2', 
+            'JUNIOR 1', 'JUNIOR 2', 
+            'SENIOR 1', 'SENIOR 2'
+        ];
+
+        // Letters for options
+        const optionPrefixes = ['A', 'B', 'C', 'D'];
+        
+        // --- GRAMMAR CONTENT DATA (SLAP GRAMMAR TRACK) ---
+        // Each module now has 1 MC and 1 TBA question.
+        // Language switch: PT (M1-M24), EN (M25-M45). Rationale always PT.
+        // ADDED: Specific descriptions and mock video URLs (replace with your Cloudinary/YouTube links).
+        
+        const grammarData = {
+            // --- STARTER 1 (Módulos 1-3) ---
+            'Verb to be': {
+                module_tag: 'STARTER 1',
+                description: "Domine as formas 'am', 'is' e 'are' para expressar estado, identidade e localização no presente e passado.",
+                videoUrl: "https://res.cloudinary.com/dqfi22uz0/video/upload/v1754073294/Dogme_myths.wmv_-_Scott_Thornbury_480p_h264_youtube_mbipus.mp4", // This link will now be handled as MP4
+                questions: [
+                    // MC 1
+                    { q: "Qual é a forma correta do 'Verb to be' para completar a frase: 'She ___ a great instructor.'?", options: [
+                        { text: "am", isCorrect: false },
+                        { text: "are", isCorrect: false },
+                        { text: "is", isCorrect: true, rationale: "O pronome 'She' (terceira pessoa do singular) exige a conjugação 'is' do Verb to be no Simple Present." },
+                        { text: "be", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a frase usando a negação: 'I ___ an engineer; I am a designer.'", answer: "am not", rationale: "O pronome 'I' usa 'am', e a negação é formada com 'not' ('am not')." }
+                ],
+            },
+            'Simple Present': {
+                module_tag: 'STARTER 1',
+                description: "Foque no uso correto dos verbos de rotina e hábitos, incluindo a regra do -S na terceira pessoa do singular (He/She/It).",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Qual das frases está correta no Simple Present (Terceira Pessoa do Singular)?", options: [
+                        { text: "He go to the office every day.", isCorrect: false },
+                        { text: "He goes to the office every day.", isCorrect: true, rationale: "Na terceira pessoa do singular (He/She/It), o verbo principal no Simple Present recebe a terminação -s ou -es." },
+                        { text: "He is go to the office every day.", isCorrect: false },
+                        { text: "He going to the office every day.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a negação: 'My sister ___ like spiders.'", answer: "doesn't", rationale: "'My sister' é 3ª pessoa do singular (She), exigindo o auxiliar 'doesn't' para a negação." }
+                ],
+            },
+            'Can / Can’t': {
+                module_tag: 'STARTER 1',
+                description: "Pratique o modal 'Can' para expressar habilidade e permissão, e a forma negativa 'Can't'.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Qual modal é usado para expressar habilidade no presente na frase 'I ___ speak three languages'?", options: [
+                        { text: "must", isCorrect: false },
+                        { text: "will", isCorrect: false },
+                        { text: "can", isCorrect: true, rationale: "'Can' é o modal primário usado para expressar habilidade ou capacidade no presente." },
+                        { text: "should", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a negação (forma completa): 'I ___ hear you, the music is too loud.'", answer: "can not", rationale: "A negação de 'can' é formada adicionando 'not' diretamente, ou a contração 'can't'." }
+                ],
+            },
+            
+            // --- STARTER 2 (Módulos 4-6) ---
+            'Present Continuous': {
+                module_tag: 'STARTER 2',
+                description: "Aprenda a estrutura 'to be + -ing' para descrever ações em progresso no momento da fala.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Qual frase descreve uma ação que está acontecendo **neste momento**?", options: [
+                        { text: "I study every night.", isCorrect: false },
+                        { text: "I am studying right now.", isCorrect: true, rationale: "O Present Continuous (Verb to be + -ing) descreve ações em progresso no momento da fala, frequentemente acompanhadas de 'right now'." },
+                        { text: "I studied yesterday.", isCorrect: false },
+                        { text: "I will study tomorrow.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a frase afirmativa: 'The baby ___ sleeping in the crib.'", answer: "is", rationale: "'The baby' (It) exige a forma 'is' do Verb to be no Present Continuous." }
+                ],
+            },
+            'Present Continuous (for future situations)': {
+                module_tag: 'STARTER 2',
+                description: "Use o Present Continuous para falar sobre planos fixos e compromissos agendados no futuro próximo.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "O Present Continuous é usado para o futuro quando expressamos:", options: [
+                        { text: "Decisões espontâneas.", isCorrect: false },
+                        { text: "Fatos científicos.", isCorrect: false },
+                        { text: "Planos fixos ou compromissos agendados.", isCorrect: true, rationale: "O Present Continuous é ideal para expressar arranjos (arrangements), planos que já foram organizados e confirmados." },
+                        { text: "Previsões sem evidência.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a frase afirmativa: 'I ___ meeting the manager on Friday.'", answer: "am", rationale: "O sujeito 'I' usa o auxiliar 'am' para formar o Present Continuous." }
+                ],
+            },
+            'Future Simple (will)': {
+                module_tag: 'STARTER 2',
+                description: "Aprenda a usar 'will' para previsões, decisões espontâneas e promessas, e a forma negativa 'won't'.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "O 'Future Simple (will)' é usado principalmente para expressar:", options: [
+                        { text: "Planos fixos e agendados.", isCorrect: false },
+                        { text: "Ações habituais.", isCorrect: false },
+                        { text: "Previsões gerais, decisões espontâneas e promessas.", isCorrect: true, rationale: "'Will' é usado para previsões que não dependem de evidência imediata, e para decisões tomadas no momento da fala (instant decisions)." },
+                        { text: "Obrigações.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a negação (forma contraída): 'I ___ be able to finish this today.'", answer: "won't", rationale: "A negação contraída de 'will not' é 'won't'." }
+                ],
+            },
+
+            // --- FRESHMAN 1 (Módulos 7-10) ---
+            'Should': {
+                module_tag: 'FRESHMAN 1',
+                description: "Pratique o modal 'Should' para oferecer conselhos, sugestões ou expressar um dever moral fraco.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Qual o principal uso do modal 'should'?", options: [
+                        { text: "Obrigação forte.", isCorrect: false },
+                        { text: "Habilidade no passado.", isCorrect: false },
+                        { text: "Aconselhamento, sugestão ou dever moral fraco.", isCorrect: true, rationale: "'Should' é usado para dar conselhos ou sugestões sobre o que é certo ou bom fazer." },
+                        { text: "Probabilidade futura.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a negação: 'We ___ waste water.'", answer: "shouldn't", rationale: "Para negar o conselho, usamos a forma contraída 'shouldn't' ('should not')." }
+                ],
+            },
+            'Was / Were': {
+                module_tag: 'FRESHMAN 1',
+                description: "Conjugue o 'Verb to be' no Simple Past, utilizando 'was' (singular) e 'were' (plural).",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "A conjugação correta de 'Verb to be' no Simple Past para 'I' e 'He' é:", options: [
+                        { text: "were", isCorrect: false },
+                        { text: "am", isCorrect: false },
+                        { text: "was", isCorrect: true, rationale: "'Was' é usado com os pronomes singulares 'I', 'He', 'She' e 'It'." },
+                        { text: "are", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a frase no passado afirmativo: 'They ___ at the beach last weekend.'", answer: "were", rationale: "O sujeito 'They' (plural) usa 'were' no Simple Past." }
+                ],
+            },
+            'Simple Past (Verbs in the past)': {
+                module_tag: 'FRESHMAN 1',
+                description: "Foque na conjugação dos verbos regulares (-ed) e irregulares (tabela) para ações concluídas no passado.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Qual o Past Tense (passado) do verbo irregular 'to go'?", options: [
+                        { text: "goed", isCorrect: false },
+                        { text: "gones", isCorrect: false },
+                        { text: "went", isCorrect: true, rationale: "'Went' é a forma do Simple Past do verbo irregular 'to go'." },
+                        { text: "go", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a negação: 'I ___ see the problem yesterday.'", answer: "didn't", rationale: "A negação no Simple Past é feita com 'didn't' seguido pelo verbo na forma base ('see')." }
+                ],
+            },
+            'Future Forms (will / going to / present continuous for future)': {
+                module_tag: 'FRESHMAN 1',
+                description: "Distinção entre 'will' (previsão/espontaneidade), 'going to' (intenção/evidência) e Present Continuous (agendamento).",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Qual forma de futuro é mais adequada para expressar uma **intenção ou plano** prévio ('I've decided to')?", options: [
+                        { text: "Future Simple (will).", isCorrect: false },
+                        { text: "Present Simple.", isCorrect: false },
+                        { text: "Be going to.", isCorrect: true, rationale: "'Be going to' é usado para expressar planos, intenções ou previsões baseadas em evidências atuais." },
+                        { text: "Present Continuous (apenas para agendamentos).", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a negação: 'I'm afraid she ___ pass the test.' (Use a forma contraída de 'will not').", answer: "won't", rationale: "A negação contraída de 'will not' é 'won't'." }
+                ],
+            },
+
+            // --- FRESHMAN 2 (Módulos 11-14) ---
+            'Could / Should / Would': {
+                module_tag: 'FRESHMAN 2',
+                description: "Diferencie 'Could' (habilidade passada/pedido), 'Should' (conselho) e 'Would' (condicional/pedido polido).",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Qual modal expressa **habilidade no passado** (e.g., 'When I was young, I ___ run fast')?", options: [
+                        { text: "should", isCorrect: false },
+                        { text: "would", isCorrect: false },
+                        { text: "could", isCorrect: true, rationale: "'Could' é o passado de 'can' e é usado para expressar uma habilidade que se tinha no passado." },
+                        { text: "must", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a pergunta educada: '___ you help me with this box, please?'", answer: "Would", rationale: "'Would' (ou 'Could') é usado para fazer pedidos educados." }
+                ],
+            },
+            'Used to': {
+                module_tag: 'FRESHMAN 2',
+                description: "Pratique 'Used to' para hábitos e estados que eram verdadeiros no passado, mas não são mais.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Qual o principal uso de 'used to'?", options: [
+                        { text: "Ações contínuas no presente.", isCorrect: false },
+                        { text: "Hábitos ou estados que existiam **regularmente no passado**, mas não mais.", isCorrect: true, rationale: "'Used to' descreve uma rotina ou estado que era verdade no passado, mas não é mais no presente." },
+                        { text: "Obrigação futura.", isCorrect: false },
+                        { text: "Habilidade no presente.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a pergunta (verbo na forma base): 'Did you ___ to wear glasses?'", answer: "use", rationale: "Após 'Did', o verbo deve estar na forma base ('use')." }
+                ],
+            },
+            'Have to / Need to': {
+                module_tag: 'FRESHMAN 2',
+                description: "Domine 'Have to' (obrigação externa) e 'Need to' (necessidade), e suas formas negativas ('don't have to').",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Qual modal é usado para expressar **obrigação externa** (regras, leis, circunstâncias)?", options: [
+                        { text: "Must (para obrigação interna).", isCorrect: false },
+                        { text: "Have to.", isCorrect: true, rationale: "'Have to' é frequentemente usado para obrigações impostas por terceiros ou regras (ex: 'I have to wear a uniform')." },
+                        { text: "Should.", isCorrect: false },
+                        { text: "Would.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a frase no presente: 'We ___ to finish the report today.'", answer: "have", rationale: "O sujeito 'We' usa 'have' para expressar obrigação." }
+                ],
+            },
+            'Past Continuous': {
+                module_tag: 'FRESHMAN 2',
+                description: "Aprenda a descrever ações em progresso no passado, geralmente interrompidas por uma ação mais curta no Simple Past.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "O Past Continuous é usado para descrever uma ação **em progresso no passado** que foi frequentemente:", options: [
+                        { text: "Concluída no passado.", isCorrect: false },
+                        { text: "Interrompida por outra ação no Simple Past.", isCorrect: true, rationale: "O Past Continuous descreve a ação de fundo (longer action) que é interrompida por uma ação mais curta no Simple Past (ex: 'I was sleeping when the phone rang')." },
+                        { text: "Uma rotina diária.", isCorrect: false },
+                        { text: "Uma obrigação futura.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a frase afirmativa: 'I ___ cooking when the electricity went out.'", answer: "was", rationale: "O sujeito 'I' usa 'was' no Past Continuous." }
+                ],
+            },
+
+            // --- SOPHOMORE 1 (Módulos 15-18) ---
+            'Must / May / Might': {
+                module_tag: 'SOPHOMORE 1',
+                description: "Compare 'Must' (obrigação forte/dedução) com 'May' e 'Might' (probabilidade/permissão).",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Qual modal é usado para expressar uma **obrigação forte, interna ou regra crucial**?", options: [
+                        { text: "Should.", isCorrect: false },
+                        { text: "Might.", isCorrect: false },
+                        { text: "Must.", isCorrect: true, rationale: "'Must' é usado para expressar obrigação forte, necessidade pessoal ou interna (ex: 'I must work harder') ou regras importantes." },
+                        { text: "Would.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a negação que expressa proibição: 'You ___ smoke indoors.'", answer: "must not", rationale: "'Must not' ou 'Mustn't' expressam proibição (não é permitido)." }
+                ],
+            },
+            'Ought to / Had better': {
+                module_tag: 'SOPHOMORE 1',
+                description: "Diferencie 'Ought to' (conselho formal, similar a 'should') de 'Had better' (aviso urgente/consequência).",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Qual modal é mais enfático e usado para expressar um **conselho urgente ou aviso** sobre consequências negativas se não for seguido?", options: [
+                        { text: "Ought to.", isCorrect: false },
+                        { text: "Should.", isCorrect: false },
+                        { text: "Had better.", isCorrect: true, rationale: "'Had better' implica uma urgência e um aviso de que algo ruim pode acontecer se o conselho não for seguido (ex: 'You had better leave now')." },
+                        { text: "Might.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a frase: 'We ___ to respect our elders.'", answer: "ought", rationale: "O modal 'ought' é usado para expressar dever e sempre vem acompanhado de 'to'." }
+                ],
+            },
+            '-ing Verbs (Gerunds and verbs of preference)': {
+                module_tag: 'SOPHOMORE 1',
+                description: "Pratique o uso do Gerúndio (verbo + -ing como substantivo) e o uso de verbos de preferência seguidos por -ing ou infinitivo.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Na frase 'Learning new rules is essential', 'Learning' está sendo usado como:", options: [
+                        { text: "Verbo no Present Continuous.", isCorrect: false },
+                        { text: "Adjetivo.", isCorrect: false },
+                        { text: "Substantivo (Gerúndio como sujeito).", isCorrect: true, rationale: "Quando um verbo com -ing funciona como sujeito da frase, ele é chamado de Gerúndio, atuando como um substantivo." },
+                        { text: "Past Participle.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a frase usando Gerúndio: 'She dislikes ___ (work) on weekends.'", answer: "working", rationale: "O verbo 'dislike' é seguido por Gerúndio (-ing)." }
+                ],
+            },
+            'Comparatives / Superlatives': {
+                module_tag: 'SOPHOMORE 1',
+                description: "Domine as regras de -er/-est e more/most, incluindo as formas irregulares (better, best).",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Qual estrutura é usada para comparar duas coisas (e.g., 'This car is ___ than that one')?", options: [
+                        { text: "Superlativo.", isCorrect: false },
+                        { text: "Comparativo.", isCorrect: true, rationale: "O Comparativo é usado para contrastar dois itens, usando a estrutura -er ou 'more... than'." },
+                        { text: "Zero Conditional.", isCorrect: false },
+                        { text: "Causative Form.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a frase no comparativo: 'This coffee is ___ (hot) than the tea.'", answer: "hotter", rationale: "O adjetivo 'hot' segue a regra CVC: dobra-se a consoante e adiciona-se -er." }
+                ],
+            },
+
+            // --- SOPHOMORE 2 (Módulos 19-24) ---
+            'Be allowed to': {
+                module_tag: 'SOPHOMORE 2',
+                description: "Use 'Be allowed to' para expressar permissão e suas formas negativas para expressar proibição em diferentes tempos verbais.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "O modal 'be allowed to' é usado para expressar:", options: [
+                        { text: "Necessidade.", isCorrect: false },
+                        { text: "Permissão ou Proibição (em sua forma negativa).", isCorrect: true, rationale: "'Be allowed to' expressa permissão. Na forma negativa ('not allowed to'), ele expressa proibição ou falta de permissão." },
+                        { text: "Conselho.", isCorrect: false },
+                        { text: "Habilidade futura.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a permissão no passado: 'He ___ allowed to go to the party.'", answer: "was", rationale: "O sujeito 'He' (singular) usa 'was' no passado." }
+                ],
+            },
+            'Past Participle': {
+                module_tag: 'SOPHOMORE 2',
+                description: "Pratique a 3ª coluna dos verbos (V3), essencial para Tempos Perfect e Voz Passiva.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "O Past Participle é a forma verbal essencial para a formação de quais estruturas?", options: [
+                        { text: "Simple Past e Future Simple.", isCorrect: false },
+                        { text: "Tempos Perfect e Voz Passiva.", isCorrect: true, rationale: "Todos os tempos Perfect (Present, Past, Future) usam 'have/had + Past Participle'. A Voz Passiva usa 'to be + Past Participle'." },
+                        { text: "Simple Present e Past Continuous.", isCorrect: false },
+                        { text: "Gerúndio e Infinitivo.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a voz passiva: 'The window was ___ (break) last night.'", answer: "broken", rationale: "O Past Participle de 'break' é 'broken'." }
+                ],
+            },
+            'Present Perfect': {
+                module_tag: 'SOPHOMORE 2',
+                description: "Distinga o Present Perfect (experiência, tempo indefinido) do Simple Past, usando 'for', 'since', 'yet' e 'already'.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "O Present Perfect é frequentemente usado para falar de experiências de vida em um tempo:", options: [
+                        { text: "Especificado no passado (e.g., yesterday).", isCorrect: false },
+                        { text: "Indefinido ou não especificado (e.g., ever/never).", isCorrect: true, rationale: "O Present Perfect conecta o passado com o presente. O momento da ação passada é irrelevante ou desconhecido, focando no resultado ou na experiência em si." },
+                        { text: "Que está acontecendo agora.", isCorrect: false },
+                        { text: "Que ocorrerá no futuro.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a frase focando na duração: 'I haven't traveled abroad ___ five years.'", answer: "for", rationale: "'For' é usado para indicar o período de tempo ('five years')." }
+                ],
+            },
+            'Present Perfect Continuous': {
+                module_tag: 'SOPHOMORE 2',
+                description: "Enfatize a **duração** e o processo de uma ação que começou no passado e ainda é relevante no presente.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "O Present Perfect Continuous enfatiza qual aspecto da ação?", options: [
+                        { text: "O resultado final da ação.", isCorrect: false },
+                        { text: "A **duração** de uma ação que começou no passado e continua até o presente.", isCorrect: true, rationale: "A forma Continuous (com 'been + -ing') foca na duração e no processo da ação." },
+                        { text: "O momento exato da conclusão.", isCorrect: false },
+                        { text: "Uma ação habitual.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a negação: 'It ___ been raining since morning.'", answer: "hasn't", rationale: "'It' usa 'has', e a negação contraída é 'hasn't'." }
+                ],
+            },
+            'Question Tags': {
+                module_tag: 'SOPHOMORE 2',
+                description: "Use o auxiliar correto e a inversão Afirmativa/Negativa para formar as Question Tags.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Se a frase principal é afirmativa ('You are an instructor'), a Question Tag deve ser:", options: [
+                        { text: "Afirmativa ('are you?').", isCorrect: false },
+                        { text: "Negativa ('aren't you?').", isCorrect: true, rationale: "A regra geral é: frase afirmativa exige tag negativa, e vice-versa (frase negativa exige tag afirmativa)." },
+                        { text: "Afirmativa com 'do' ('do you?').", isCorrect: false },
+                        { text: "Negativa com 'did' ('didn't you?').", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete a tag: 'He drives very fast, ___ he?'", answer: "doesn't", rationale: "A frase é Simple Present afirmativa (drives), então a tag é negativa ('doesn't')." }
+                ],
+            },
+            'Relative Clauses': {
+                module_tag: 'SOPHOMORE 2',
+                description: "Use pronomes relativos (who, which, that, whose, where, when) para conectar informações e formar orações relativas.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Qual pronome relativo é usado para substituir **pessoas**?", options: [
+                        { text: "Which.", isCorrect: false },
+                        { text: "Where.", isCorrect: false },
+                        { text: "Who / That.", isCorrect: true, rationale: "Who é usado para pessoas. 'That' pode ser usado para pessoas e coisas, mas 'Who' é o mais comum para pessoas." },
+                        { text: "Whose.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Qual pronome relativo é usado para substituir coisas?", answer: "which", rationale: "'Which' é o pronome relativo padrão para coisas e animais (ou 'that')." }
+                ],
+            },
+
+            // --- JUNIOR 1 (Módulos 25-29) ---
+            'Phrasal Verbs (Pt. 1 & 2)': {
+                module_tag: 'JUNIOR 1',
+                description: "Practice the meaning and separability rules of common Phrasal Verbs (Pt. 1 & 2).",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Which Phrasal Verb means 'to search/look for information'?", options: [
+                        { text: "Look over", isCorrect: false },
+                        { text: "Look up", isCorrect: true, rationale: "'Look up' é o phrasal verb correto para procurar uma informação, geralmente em um dicionário ou na internet." },
+                        { text: "Look after", isCorrect: false },
+                        { text: "Look at", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete the sentence with the correct Phrasal Verb meaning 'to invent': 'She ___ a new story.' (verb: make)", answer: "made up", rationale: "'Make up' significa inventar, criar ou reconciliar." }
+                ],
+            },
+            'Zero Conditional': {
+                module_tag: 'JUNIOR 1',
+                description: "Master the Zero Conditional (If + Simple Present, Simple Present) for general truths and facts.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "The Zero Conditional is used to express:", options: [
+                        { text: "Unreal situations in the past.", isCorrect: false },
+                        { text: "General truths, scientific facts, or situations that are always true.", isCorrect: true, rationale: "O Zero Conditional expressa fatos imutáveis ou resultados que sempre acontecem sob certas condições." },
+                        { text: "Fixed future plans.", isCorrect: false },
+                        { text: "Advice.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete the sentence in the Simple Present: 'When you cut yourself, it usually ___ (bleed).'", answer: "bleeds", rationale: "O resultado ('it') exige o Simple Present com -s." }
+                ],
+            },
+            'First Conditional': {
+                module_tag: 'JUNIOR 1',
+                description: "Practice the First Conditional (If + Simple Present, Will + Base Verb) for real and probable future outcomes.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "The First Conditional is used to express:", options: [
+                        { text: "Hypothetical or unlikely situations.", isCorrect: false },
+                        { text: "Real or possible situations in the future.", isCorrect: true, rationale: "O First Conditional lida com a causa e efeito provável no futuro." },
+                        { text: "Scientific facts.", isCorrect: false },
+                        { text: "Past regrets.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete the main clause: 'If it rains, we ___ (stay) home.'", answer: "will stay", rationale: "O resultado provável no futuro exige 'will' + verbo base ('stay')." }
+                ],
+            },
+            'Second Conditional': {
+                module_tag: 'JUNIOR 1',
+                description: "Focus on the Second Conditional (If + Simple Past, Would + Base Verb) for unreal/hypothetical present situations.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "The Second Conditional is used to express:", options: [
+                        { text: "Universal truths.", isCorrect: false },
+                        { text: "Unreal or hypothetical situations in the present/future.", isCorrect: true, rationale: "Este condicional fala de coisas improváveis ou imaginárias no presente (ex: 'If I won the lottery...')." },
+                        { text: "Fixed future plans.", isCorrect: false },
+                        { text: "Completed actions in the past.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete the main clause: 'If she knew the answer, she ___ (tell) us.'", answer: "would tell", rationale: "A cláusula principal usa 'would' + verbo base ('tell')." }
+                ],
+            },
+            'Present Perfect (review)': {
+                module_tag: 'JUNIOR 1',
+                description: "Review key adverbs ('yet', 'already', 'just') and time markers ('for', 'since') in the Present Perfect.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Which word is used in negative or interrogative Present Perfect sentences, usually at the end of the phrase?", options: [
+                        { text: "Just.", isCorrect: false },
+                        { text: "Already.", isCorrect: false },
+                        { text: "Yet.", isCorrect: true, rationale: "'Yet' (ainda) é usado em frases negativas e interrogativas, sempre no final." },
+                        { text: "For.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete the phrase: 'She ___ never eaten sushi.'", answer: "has", rationale: "O sujeito 'She' exige o auxiliar 'has' no Present Perfect." }
+                ],
+            },
+
+            // --- JUNIOR 2 (Módulos 30-32) ---
+            'Conditionals Review (Zero, First, Second)': {
+                module_tag: 'JUNIOR 2',
+                description: "Review the usage and structure differentiation among the Zero, First, and Second Conditionals.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Which Conditional is used to give hypothetical advice ('If I were you...')?", options: [
+                        { text: "Zero Conditional.", isCorrect: false },
+                        { text: "First Conditional.", isCorrect: false },
+                        { text: "Second Conditional.", isCorrect: true, rationale: "A construção 'If I were you' é um uso comum do Second Conditional para dar conselhos." },
+                        { text: "Third Conditional.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete the sentence (First Conditional): 'If I leave now, I ___ (catch) the bus.'", answer: "will catch", rationale: "O First Conditional exige 'will' + verbo base no resultado provável." }
+                ],
+            },
+            'Phrasal Verbs (Keep / Put / Give)': {
+                module_tag: 'JUNIOR 2',
+                description: "Practice specific Phrasal Verbs built around the base verbs 'Keep', 'Put', and 'Give' (e.g., keep on, put off, give away).",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "What is the meaning of 'Keep up with' (e.g., 'It's hard to keep up with the news')?", options: [
+                        { text: "To give up something.", isCorrect: false },
+                        { text: "To follow, to maintain pace.", isCorrect: true, rationale: "'Keep up with' significa manter-se atualizado ou na mesma velocidade/nível de algo." },
+                        { text: "To postpone.", isCorrect: false },
+                        { text: "To store.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete the sentence: 'Don't ___ (give) my secret.'", answer: "give away", rationale: "'Give away' significa revelar um segredo." }
+                ],
+            },
+            'Compound Adjectives / Complex Sentences': {
+                module_tag: 'JUNIOR 2',
+                description: "Focus on the correct formation and usage of hyphenated compound adjectives and the structure of complex sentences (independent/dependent clauses).",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Which compound adjective is correctly written (e.g., 'a ___ teacher')?", options: [
+                        { text: "well know", isCorrect: false },
+                        { text: "well-knowing", isCorrect: false },
+                        { text: "well-known", isCorrect: true, rationale: "Adjetivos compostos que modificam um substantivo são geralmente ligados por hífen, e a forma mais comum é 'adjetivo + Past Participle' ('well-known', 'long-term')." },
+                        { text: "well-knowed", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete the compound adjective for 'a story that lasts ten minutes': 'a ten-___ story.'", answer: "minute", rationale: "Em adjetivos compostos com números, a unidade de tempo é singular ('minute')." }
+                ],
+            },
+
+            // --- SENIOR 1 (Módulos 33-39) ---
+            'Causative Form (have/get something done)': {
+                module_tag: 'SENIOR 1',
+                description: "Practice the structure 'have/get something done' to arrange for a service, and the use of the agent (person performing the service).",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "The sentence 'I had my car fixed' means that:", options: [
+                        { text: "I fixed my car myself.", isCorrect: false },
+                        { text: "I asked or paid someone to fix my car (professional service).", isCorrect: true, rationale: "O Causative Form ('have/get something done') indica que a pessoa arranjou para que outra pessoa realizasse o serviço para ela." },
+                        { text: "My car is being fixed now.", isCorrect: false },
+                        { text: "I was fixed by my car.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete the sentence using the Past Participle: 'I need to get my license ___ (renew).'", answer: "renewed", rationale: "O Causative Form ('get something done') exige o Past Participle ('renewed')." }
+                ],
+            },
+            'Reflexive Pronouns': {
+                module_tag: 'SENIOR 1',
+                description: "Use reflexive pronouns (myself, yourself, etc.) when the subject and object are the same, or for emphasis (by myself).",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Which pronoun completes the sentence 'She taught ___ how to play the guitar'?", options: [
+                        { text: "hers", isCorrect: false },
+                        { text: "she", isCorrect: false },
+                        { text: "herself", isCorrect: true, rationale: "O Pronome Reflexivo ('herself') é usado quando o objeto da ação é o mesmo que o sujeito ('She')." },
+                        { text: "her", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete the sentence: 'The machine can fix ___.'", answer: "itself", rationale: "'The machine' (It) usa 'itself' como pronome reflexivo." }
+                ],
+            },
+            'Past Perfect': {
+                module_tag: 'SENIOR 1',
+                description: "Apply the Past Perfect ('had' + Past Participle) to describe an action that occurred before another action or point in the past.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "The Past Perfect is used to describe an action that happened:", options: [
+                        { text: "Before an action in the Present Perfect.", isCorrect: false },
+                        { text: "Before another action in the Simple Past.", isCorrect: true, rationale: "O Past Perfect ('had + PP') é o 'passado do passado', usado para descrever uma ação anterior a um ponto específico no tempo passado." },
+                        { text: "Simultaneously to an action in the Past Continuous.", isCorrect: false },
+                        { text: "In the future.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete the phrase: 'I felt sick because I ___ (eat) too much.'", answer: "had eaten", rationale: "Ação 'had eaten' ocorreu antes de 'felt sick', exigindo Past Perfect." }
+                ],
+            },
+            'Past Modals (could have / should have / would have)': {
+                module_tag: 'SENIOR 1',
+                description: "Differentiate between 'Should have' (regret/criticism), 'Could have' (unrealized ability/possibility), and 'Would have' (hypothetical result in the past).",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Which modal is used to express **regret or criticism** about an action that **was not done** in the past (e.g., 'You ___ studied more')?", options: [
+                        { text: "would have", isCorrect: false },
+                        { text: "could have", isCorrect: false },
+                        { text: "should have", isCorrect: true, rationale: "'Should have + PP' é usado para dizer que a pessoa fez algo errado e que a ação correta não foi feita (arrependimento ou crítica)." },
+                        { text: "must have", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete the sentence (regret): 'I ___ (should/have/listen) to your advice.'", answer: "should have listened", rationale: "'Should have listened' expressa o arrependimento por não ter ouvido o conselho." }
+                ],
+            },
+            'Third Conditional': {
+                module_tag: 'SENIOR 1',
+                description: "Master the Third Conditional (If + Past Perfect, Would have + PP) for unreal past conditions and results (regrets).",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "The Third Conditional is used to express:", options: [
+                        { text: "Real situations in the future.", isCorrect: false },
+                        { text: "Unreal situations in the past (regrets, speculations).", isCorrect: true, rationale: "Ele descreve uma condição que não foi cumprida no passado e seu resultado imaginário no passado." },
+                        { text: "Scientific facts.", isCorrect: false },
+                        { text: "Advice in the present.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete the main clause (negative): 'If she had come, we ___ (would/not/have/argue).'", answer: "wouldn't have argued", rationale: "A negação do resultado hipotético é 'wouldn't have' + Past Participle ('argued')." }
+                ],
+            },
+            'Past Perfect Continuous': {
+                module_tag: 'SENIOR 1',
+                description: "Use the Past Perfect Continuous ('had been' + -ing) to emphasize the duration of an action leading up to a specific moment in the past.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "The Past Perfect Continuous is used to emphasize the **duration** of an action that:", options: [
+                        { text: "Finished in the present.", isCorrect: false },
+                        { text: "Continued up to a specific point in the past.", isCorrect: true, rationale: "O foco é na continuidade e duração da ação até o momento de referência no passado." },
+                        { text: "Is a routine in the past.", isCorrect: false },
+                        { text: "Is a future plan.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete o verbo no Gerúndio: 'They were exhausted because they had been ___ (travel) all night.'", answer: "traveling", rationale: "O verbo principal deve estar na forma -ing ('traveling')." }
+                ],
+            },
+            'Reported Speech': {
+                module_tag: 'SENIOR 1',
+                description: "Practice the rules of 'backshift' for tenses and changes in time/place expressions when reporting what someone said.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "When reporting a Simple Present statement ('I am busy'), which tense should be used in Reported Speech?", options: [
+                        { text: "Simple Present.", isCorrect: false },
+                        { text: "Simple Past.", isCorrect: true, rationale: "A regra de 'backshift' de tempos verbais exige que o Simple Present seja mudado para o Simple Past." },
+                        { text: "Present Perfect.", isCorrect: false },
+                        { text: "Future Simple.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete o Reported Speech: 'He said he ___ (had/live) in London before.'", answer: "had lived", rationale: "O Past Perfect ('had lived') é usado para reportar o Simple Past ou o Past Perfect." }
+                ],
+            },
+
+            // --- SENIOR 2 (Módulos 40-45) ---
+            'Wish / If only': {
+                module_tag: 'SENIOR 2',
+                description: "Use 'Wish' / 'If only' with Simple Past (present wish) or Past Perfect (past regret) to express desires and unreal situations.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Which structure is used to express **regret about a past situation** (e.g., 'I wish I ___ studied for the test')?", options: [
+                        { text: "Simple Past.", isCorrect: false },
+                        { text: "Past Perfect.", isCorrect: true, rationale: "Para arrependimentos sobre o passado, usamos o tempo verbal um passo mais atrás: Past Perfect ('had studied')." },
+                        { text: "Future Simple.", isCorrect: false },
+                        { text: "Simple Present.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete the sentence (present wish): 'I wish I ___ (speak) French.'", answer: "spoke", rationale: "Desejo sobre o presente exige Simple Past ('spoke')." }
+                ],
+            },
+            'All Conditionals (Review)': {
+                module_tag: 'SENIOR 2',
+                description: "Review the key differences and uses for Zero, First, Second, and Third Conditionals.",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Which Conditional is used to talk about a past cause that would have had a different result in the past (regret)?", options: [
+                        { text: "First Conditional.", isCorrect: false },
+                        { text: "Second Conditional.", isCorrect: false },
+                        { text: "Third Conditional.", isCorrect: true, rationale: "O Third Conditional (If + Past Perfect, Would have + PP) é o único usado para o passado irreal." },
+                        { text: "Zero Conditional.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete the sentence (First Conditional): 'If he ___ (arrive) late, we will start without him.'", answer: "arrives", rationale: "O Simple Present na 3ª pessoa exige '-s' na condição." }
+                ],
+            },
+            'Mixed Conditionals': {
+                module_tag: 'SENIOR 2',
+                description: "Practice combining past conditions (Past Perfect) with present results (Would + verb) and vice-versa (Type 3-2 and 2-3).",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Which structure of Mixed Conditional expresses a **past cause** with a **present result**?", options: [
+                        { text: "If + Simple Past, Would have + PP.", isCorrect: false },
+                        { text: "If + Past Perfect, Would + base verb (Type 3-2).", isCorrect: true, rationale: "A condição (Past Perfect) é do Tipo 3 (passado), e o resultado (Would + base verb) é do Tipo 2 (presente)." },
+                        { text: "If + Simple Present, Would + base verb.", isCorrect: false },
+                        { text: "If + Past Continuous, Will + verb.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete the sentence (Type 3-2): 'If I had checked the map, I ___ (would/not/be) lost now.'", answer: "wouldn't be", rationale: "O resultado presente (Tipo 2) exige 'would' + base verb ('be') + negação." }
+                ],
+            },
+            'Future in the Past (would + verb / was going to)': {
+                module_tag: 'SENIOR 2',
+                description: "Formule frases descrevendo o que era futuro a partir de um ponto de vista no passado ('would' para previsão, 'was going to' para intenção não realizada).",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Which form is used to express a **decision or prediction** made from a **past point of view** (e.g., 'He said he ___ call me')?", options: [
+                        { text: "will", isCorrect: false },
+                        { text: "was going to", isCorrect: false },
+                        { text: "would", isCorrect: true, rationale: "'Would' é usado como o Reported Speech (passado) de 'will'. Ele expressa algo que era futuro do ponto de vista do passado." },
+                        { text: "had to", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete the sentence: 'She said she ___ (call) me later.'", answer: "would call", rationale: "O 'will' torna-se 'would call' no Reported Speech (Future in the Past)." }
+                ],
+            },
+            'Be allowed to / Be supposed to': {
+                module_tag: 'SENIOR 2',
+                description: "Diferencie 'Be allowed to' (permissão/proibição) de 'Be supposed to' (expectativa/dever/rumor).",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "Which modal is used to express an **expectation, duty, or general rumor/belief** (e.g., 'We ___ be quiet in the library')?", options: [
+                        { text: "be allowed to", isCorrect: false },
+                        { text: "be supposed to", isCorrect: true, rationale: "'Be supposed to' refere-se a deveres, expectativas ou arranjos que são esperados ou exigidos (de forma mais suave que 'must')." },
+                        { text: "must", isCorrect: false },
+                        { text: "can", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete the sentence: 'She ___ allowed to enter the restricted area.'", answer: "is", rationale: "O sujeito 'She' exige 'is' no presente." }
+                ],
+            },
+            'Cleft Sentences': {
+                module_tag: 'SENIOR 2',
+                description: "Use 'It-cleft' e 'Wh-cleft' ('What I need is...') para dar ênfase a uma parte específica da frase (sujeito, objeto, tempo, etc.).",
+                videoUrl: "https://www.youtube.com/watch?v=kYv9qQj8F3o",
+                questions: [
+                    // MC 1
+                    { q: "What is the main purpose of a Cleft Sentence (e.g., 'It was John that called me')?", options: [
+                        { text: "To reduce the size of the sentence.", isCorrect: false },
+                        { text: "To focus or give **emphasis** to a specific piece of information in the sentence (the 'Focus').", isCorrect: true, rationale: "Cleft Sentences (frases clivadas) são usadas para reorganizar a informação e destacar uma parte específica (sujeito, objeto, tempo, lugar)." },
+                        { text: "To express regret in the past.", isCorrect: false },
+                        { text: "To connect complex sentences.", isCorrect: false }
+                    ] },
+                    // TBA 1
+                    { q: "Complete the Cleft Sentence to emphasize the object: 'It was the email ___ I sent yesterday.'", answer: "that", rationale: "O pronome relativo 'that' é usado para coisas neste tipo de Cleft Sentence." }
+                ],
+            },
+        };
+
+        // --- DOM ELEMENTS ---
+        const dashboardView = document.getElementById('dashboard-view');
+        const generatorView = document.getElementById('generator-view');
+        const studyView = document.getElementById('study-view'); 
+        const cardsContainer = document.getElementById('level-cards-container');
+        const filterContainer = document.getElementById('filter-container');
+        const currentLevelDisplay = document.getElementById('current-level-display');
+        const mainQuestion = document.getElementById('main-question');
+        const optionsContainer = document.getElementById('options-container');
+        const rationaleDisplay = document.getElementById('rationale-display');
+        const rationaleContent = document.getElementById('rationale-content');
+        const nextQuestionBtn = document.getElementById('next-question-btn');
+        const feedbackAlert = document.getElementById('feedback-alert');
+        const questionLabel = document.getElementById('question-label');
+        const backButtonText = document.getElementById('back-button-text');
+        const nextButtonText = document.getElementById('next-button-text');
+        const studyModuleDisplay = document.getElementById('study-module-display');
+        
+        // Login Elements
+        const loginGate = document.getElementById('login-gate');
+        const passwordInput = document.getElementById('password-input');
+        const loginFeedback = document.getElementById('login-feedback');
+        
+        // --- DATA PREPROCESSING ---
+        
+        // 1. Group modules by tag
+        const modulesByTag = {};
+        Object.keys(grammarData).forEach(key => {
+            const module = { name: key, ...grammarData[key] };
+            const tag = module.module_tag;
+            if (!modulesByTag[tag]) {
+                modulesByTag[tag] = [];
+            }
+            modulesByTag[tag].push(module);
+        });
+
+        // 2. Sort tags by LEVEL_ORDER and assign continuous module numbers
+        let continuousModuleNumber = 1;
+        const sortedModules = [];
+        const uniqueTags = ['ALL'];
+        
+        LEVEL_ORDER.forEach(tag => {
+            if (modulesByTag[tag]) {
+                if (!uniqueTags.includes(tag)) {
+                    uniqueTags.push(tag);
+                }
+                // Important: Modules must be added in the order they appear in the data array
+                modulesByTag[tag].forEach((module) => {
+                    module.moduleNumber = continuousModuleNumber++;
+                    sortedModules.push(module);
+                });
+            }
+        });
+        
+        // --- LOGIN FUNCTION ---
+
+        window.checkPassword = function(event) {
+            event.preventDefault();
+            const password = passwordInput.value.toLowerCase().trim();
+            const correctPassword = "ariana"; // CHAVE SECRETA: ariana
+            
+            if (password === correctPassword) {
+                // IMPORTANT FIX: Use display: none on the gate to remove it from document flow
+                loginGate.style.display = 'none'; 
+                document.getElementById('main-wrapper').classList.remove('hidden');
+                loginFeedback.classList.add('hidden');
+                renderFilterButtons(); // NEW: Render filters first
+                renderLevelCards(); // Render cards based on default filter
+            } else {
+                loginFeedback.textContent = "Cantora incorreta. Tente novamente!";
+                loginFeedback.classList.remove('hidden');
+                passwordInput.value = '';
+            }
+        }
+
+        // --- NAVIGATION AND GAME STATE FUNCTIONS ---
+
+        /**
+         * Displays a temporary feedback message.
+         */
+        function alertMessage(message, type) {
+            feedbackAlert.textContent = message;
+            feedbackAlert.classList.remove('hidden', 'bg-green-500', 'bg-red-500', 'bg-blue-500');
+            
+            if (type === 'success') {
+                feedbackAlert.classList.add('bg-green-500');
+            } else if (type === 'error') {
+                feedbackAlert.classList.add('bg-red-500');
+            } else {
+                 feedbackAlert.classList.add('bg-blue-500');
+            }
+            
+            setTimeout(() => {
+                feedbackAlert.classList.add('hidden');
+            }, 3000);
+        }
+
+        function showDashboard() {
+            dashboardView.classList.remove('hidden');
+            generatorView.classList.add('hidden');
+            studyView.classList.add('hidden'); // NEW: Hide study view
+            currentModule = null;
+            questionsPool = []; 
+            // Reset language back to Portuguese default texts
+            questionLabel.textContent = "PERGUNTA ATUAL:";
+            backButtonText.textContent = "Voltar para Módulos";
+            nextButtonText.textContent = "Gerar Próxima Pergunta";
+            renderLevelCards(); // Re-render cards in case of a filter change before exit
+        }
+
+        window.openQuestionGenerator = function(moduleName) {
+            currentModule = moduleName;
+            const moduleData = grammarData[moduleName];
+            const moduleObj = sortedModules.find(m => m.name === moduleName);
+            
+            // Check for English mode (JUNIOR 1 and above)
+            const moduleTag = moduleObj.module_tag;
+            const isEnglishMode = LEVEL_ORDER.indexOf(moduleTag) >= LEVEL_ORDER.indexOf('JUNIOR 1');
+            
+            if (isEnglishMode) {
+                 questionLabel.textContent = "CURRENT QUESTION:";
+                 backButtonText.textContent = "Back to Modules";
+                 nextButtonText.textContent = "Generate Next Question";
+            } else {
+                 questionLabel.textContent = "PERGUNTA ATUAL:";
+                 backButtonText.textContent = "Voltar para Módulos";
+                 nextButtonText.textContent = "Gerar Próxima Pergunta";
+            }
+            
+            // Display module name with continuous number
+            const moduleInfo = moduleObj ? `${moduleName} (${moduleObj.module_tag} - Módulo ${moduleObj.moduleNumber})` : moduleName;
+            currentLevelDisplay.textContent = moduleInfo;
+
+            dashboardView.classList.add('hidden');
+            studyView.classList.add('hidden'); // Hide study view
+            generatorView.classList.remove('hidden');
+            
+            // Reset game state upon entry
+            // Initialize question pool with ALL module questions
+            questionsPool = [...moduleData.questions];
+            
+            // Hide feedback and reset state
+            rationaleDisplay.classList.add('hidden');
+            answerSubmitted = false;
+            
+            loadNextQuestion();
+        }
+
+        window.openStudyView = function(moduleName) {
+            currentModule = moduleName;
+            const moduleObj = sortedModules.find(m => m.name === moduleName);
+            const moduleInfo = moduleObj ? `${moduleName} (${moduleObj.module_tag} - Módulo ${moduleObj.moduleNumber})` : moduleName;
+            const moduleData = grammarData[moduleName]; // Get data to access video URL
+            const videoPlayerContainer = document.getElementById('video-player');
+
+            studyModuleDisplay.textContent = moduleInfo;
+
+            dashboardView.classList.add('hidden');
+            generatorView.classList.add('hidden');
+            studyView.classList.remove('hidden');
+            
+            const url = moduleData.videoUrl || ""; 
+            const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|\?v=|v\/)|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/|music\.youtube\.com\/watch\?v=)([^&?#]+)/;
+            const mp4Regex = /\.(mp4|webm|ogg)$/i;
+            
+            let contentHTML = '';
+
+            const youtubeMatch = url.match(youtubeRegex);
+            const mp4Match = url.match(mp4Regex);
+
+            if (youtubeMatch && youtubeMatch[1]) {
+                const videoId = youtubeMatch[1];
+                // Use modestbranding=1 to hide YouTube logo and allow autoplay/full screen
+                const embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`; 
+                contentHTML = `<iframe src="${embedUrl}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+            } else if (mp4Match) {
+                // Handle direct video files (like Cloudinary MP4)
+                contentHTML = `
+                    <video controls preload="auto" style="width: 100%; height: 100%; border-radius: 0.75rem;">
+                        <source src="${url}" type="video/${mp4Match[1].toLowerCase()}">
+                        Seu navegador não suporta o elemento de vídeo HTML5.
+                    </video>
+                `;
+            } else {
+                // Invalid or unsupported URL
+                contentHTML = `
+                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background-color: #292524; color: white; border-radius: 0.75rem; text-align: center; padding: 2rem;">
+                        Erro: Link de vídeo inválido ou formato não suportado (apenas YouTube ou MP4/WebM direto).
+                    </div>
+                `;
+            }
+            
+            videoPlayerContainer.innerHTML = contentHTML;
+        }
+
+
+        // --- QUIZ GAME FUNCTIONS (PRACTICE) ---
+
+        /**
+         * Loads the next question (or the first one).
+         */
+        window.loadNextQuestion = function() {
+            if (!currentModule) {
                 return;
             }
 
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
+            // If the pool runs out, reset
+            if (questionsPool.length === 0) {
+                 questionsPool = [...grammarData[currentModule].questions];
+                 alertMessage(`O pool de perguntas foi resetado.`, 'info');
+            }
+            
+            const randomIndex = Math.floor(Math.random() * questionsPool.length);
+            currentQuestion = questionsPool[randomIndex];
+            // Remove question from pool to prevent repetition in this round
+            questionsPool.splice(randomIndex, 1); 
 
-            // Check Auth State
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    await handleUserLogin(user.email);
+            // Update interface
+            let formattedQuestion = currentQuestion.q;
+            formattedQuestion = formattedQuestion.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            mainQuestion.innerHTML = formattedQuestion;
+            
+            renderOptions();
+            
+            // Hide feedback and reset state
+            rationaleDisplay.classList.add('hidden');
+            nextQuestionBtn.disabled = true;
+            answerSubmitted = false;
+        }
+        
+        /**
+         * Renders the options based on question type (MC or TBA).
+         */
+        function renderOptions() {
+            optionsContainer.innerHTML = '';
+            
+            if (currentQuestion.options) {
+                // RENDER MC OPTIONS
+                currentQuestion.options.forEach((option, index) => {
+                    const button = document.createElement('button');
+                    button.className = 'option-button';
+                    button.setAttribute('data-index', index);
+                    button.onclick = () => submitMCAnswer(index);
+                    
+                    let formattedText = option.text;
+                    formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); 
+
+                    button.innerHTML = `
+                        <span class="option-prefix">${optionPrefixes[index]}</span>
+                        <span class="text-base">${formattedText}</span>
+                    `;
+                    optionsContainer.appendChild(button);
+                });
+            } else if (currentQuestion.answer) {
+                 // RENDER TBA INPUT
+                optionsContainer.innerHTML = `
+                    <div id="tba-input-container">
+                        <input type="text" id="tba-answer-input" class="login-input" placeholder="Digite sua resposta aqui...">
+                        <button id="tba-submit-btn" class="action-button w-full mt-3" onclick="submitTBAAnswer()">Verificar Resposta</button>
+                    </div>
+                `;
+            }
+        }
+        
+        /**
+         * Displays the rationale text in the dedicated area.
+         */
+        function displayRationale(text, isCorrect) {
+            if (isCorrect) {
+                 rationaleDisplay.classList.add('hidden');
+            } else {
+                 rationaleContent.innerHTML = `<span class="font-bold">Explicação:</span> ${text}`;
+                 rationaleDisplay.classList.remove('hidden');
+            }
+        }
+        
+        /**
+         * Submits the user's MC answer and provides feedback.
+         */
+        window.submitMCAnswer = function(selectedIndex) {
+            if (answerSubmitted) return; 
+            answerSubmitted = true;
+            
+            const selectedOption = currentQuestion.options[selectedIndex];
+            let isCorrect = selectedOption.isCorrect;
+            let correctOption = currentQuestion.options.find(opt => opt.isCorrect);
+            let correctIndex = currentQuestion.options.findIndex(opt => opt.isCorrect);
+
+            // Disable all buttons after submission
+            document.querySelectorAll('.option-button').forEach(btn => btn.disabled = true);
+
+            // Highlight the correct and incorrect option
+            document.querySelectorAll('.option-button').forEach((btn, index) => {
+                btn.classList.remove('border-gray-200');
+                if (index === correctIndex) {
+                    btn.classList.add('bg-green-100', 'border-green-500'); // Correct (Green)
+                } else if (index === selectedIndex) {
+                    btn.classList.add('bg-red-100', 'border-red-500'); // Incorrect chosen (Red)
                 } else {
-                    showLogin();
+                    btn.classList.add('bg-white', 'border-gray-300');
                 }
             });
 
-            // Fortune Cookie
-            setFortuneCookie();
+            // Feedback and Rationale Logic
+            if (isCorrect) {
+                alertMessage(`Correto! 🎉`, 'success');
+                displayRationale(null, true);
+            } else {
+                alertMessage(`Incorreto. Veja a explicação abaixo.`, 'error');
+                const rationaleText = correctOption.rationale || 'Nenhuma explicação disponível.';
+                displayRationale(rationaleText, false);
+            }
+            
+            // Enable Next Question Button
+            nextQuestionBtn.disabled = false;
         }
 
-        async function handleUserLogin(email) {
-            const btnLoader = document.getElementById('btn-loader');
-            const btnText = document.getElementById('btn-text');
-            const signupLoader = document.getElementById('signup-btn-loader');
-            const signupText = document.getElementById('signup-btn-text');
+        /**
+         * Submits the user's TBA answer and provides feedback.
+         */
+        window.submitTBAAnswer = function() {
+            if (answerSubmitted) return; 
+            answerSubmitted = true;
+
+            const inputElement = document.getElementById('tba-answer-input');
+            const submitButton = document.getElementById('tba-submit-btn');
+
+            const userAnswer = inputElement.value.toLowerCase().trim();
+            const correctAnswer = currentQuestion.answer.toLowerCase().trim();
             
-            if(btnLoader) btnLoader.classList.remove('hidden');
-            if(btnText) btnText.textContent = 'Carregando...';
-            if(signupLoader) signupLoader.classList.remove('hidden');
-            if(signupText) signupText.textContent = 'Verificando...';
+            // Simple check: user answer must match the correct answer exactly (case-insensitive, trim)
+            const isCorrect = (userAnswer === correctAnswer);
 
-            try {
-                // 1. Tentar encontrar como Aluno
-                const studentsRef = collection(db, `artifacts/${appId}/public/data/students`);
-                const q = query(studentsRef, where("email", "==", email));
-                const querySnapshot = await getDocs(q);
+            // Disable input
+            inputElement.disabled = true;
+            
+            // CORRECTION: Hide the submit button completely after submission
+            submitButton.style.display = 'none';
 
-                if (!querySnapshot.empty) {
-                    // É aluno
-                    const studentDoc = querySnapshot.docs[0];
-                    currentStudent = { id: studentDoc.id, ...studentDoc.data() };
-                    isAdminView = false;
+            // Highlight input based on result
+            inputElement.classList.remove('border-indigo-500');
+            if (isCorrect) {
+                inputElement.classList.add('bg-green-100', 'border-green-500');
+                alertMessage(`Correto! 🎉`, 'success');
+                displayRationale(null, true);
+            } else {
+                inputElement.classList.add('bg-red-100', 'border-red-500');
+                inputElement.value = `Resposta Correta: ${currentQuestion.answer}`; // Show correct answer
+                alertMessage(`Incorreto. Veja a explicação abaixo.`, 'error');
+                const rationaleText = currentQuestion.rationale || 'Nenhuma explicação disponível.';
+                displayRationale(rationaleText, false);
+            }
+
+            // Enable Next Question Button (BUG FIX: Ensure button is enabled after checking answer)
+            nextQuestionBtn.disabled = false;
+        }
+
+
+        // --- DASHBOARD FUNCTIONS (FILTERING AND RENDERING) ---
+        
+        /**
+         * Filters the module cards based on the selected tag.
+         */
+        window.filterModules = function(tag) {
+            currentFilter = tag;
+            
+            // Update button styles
+            document.querySelectorAll('.filter-button').forEach(btn => {
+                if (btn.getAttribute('data-tag') === tag) {
+                    btn.classList.add('active');
                 } else {
-                    // 2. Tentar encontrar como Colaborador (Admin/Teacher)
-                    const collabRef = collection(db, `artifacts/${appId}/public/data/collaborators`);
-                    const qCollab = query(collabRef, where("email", "==", email));
-                    const collabSnapshot = await getDocs(qCollab);
-
-                    if (!collabSnapshot.empty) {
-                        // É Admin/Colaborador - Carregar um aluno de exemplo para visualização
-                        // Tenta encontrar o primeiro aluno ativo
-                        const sampleQ = query(studentsRef, limit(1));
-                        const sampleSnap = await getDocs(sampleQ);
-
-                        if (!sampleSnap.empty) {
-                            const sampleDoc = sampleSnap.docs[0];
-                            currentStudent = { id: sampleDoc.id, ...sampleDoc.data() };
-                            isAdminView = true;
-                        } else {
-                             throw new Error("Acesso de admin permitido, mas nenhum aluno encontrado no banco de dados para visualização.");
-                        }
-                    } else {
-                        throw new Error("Usuário não encontrado. Verifique se o e-mail está cadastrado como aluno ou colaborador.");
-                    }
+                    btn.classList.remove('active');
                 }
-
-                // 2. Load Academic Data (Turma or VIP)
-                await loadAcademicData();
-
-                // 3. Render UI
-                renderStudentProfile();
-                renderPEF();
-                renderGrades();
-
-                showApp();
-
-            } catch (error) {
-                console.error("Login error:", error);
-                // Only show error on the active form
-                const activeForm = document.getElementById('login-form').classList.contains('hidden') ? 'signup-error' : 'login-error';
-                const errorDiv = document.getElementById(activeForm);
-                if (errorDiv) {
-                    errorDiv.textContent = error.message;
-                    errorDiv.classList.remove('hidden');
-                }
-                
-                // If checking auth state failed (e.g. valid auth user but no student record), sign out
-                signOut(auth);
-                showLogin();
-            } finally {
-                if(btnLoader) btnLoader.classList.add('hidden');
-                if(btnText) btnText.textContent = 'Entrar';
-                if(signupLoader) signupLoader.classList.add('hidden');
-                if(signupText) signupText.textContent = 'Cadastrar';
-            }
-        }
-
-        async function loadAcademicData() {
-            // Check modality
-            const modalidade = (currentStudent.modalidade || 'TURMA').toUpperCase();
-            
-            if (modalidade === 'VIP' || modalidade === 'DUPLA') {
-                // Fetch VIP record
-                const vipsRef = collection(db, `artifacts/${appId}/public/data/vips`);
-                const q = query(vipsRef, where("studentId", "==", currentStudent.id));
-                const snapshot = await getDocs(q);
-                
-                if (!snapshot.empty) {
-                    // Get most recent active VIP contract
-                    const vips = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
-                    // Sort by start date desc (assuming mostly sorted)
-                    currentUnitData = vips[0]; 
-                    currentUnitData.type = 'vip';
-                }
-            } else {
-                // Fetch Turma
-                // Find turma where studentId is in studentIds array
-                const turmasRef = collection(db, `artifacts/${appId}/public/data/turmas`);
-                const q = query(turmasRef, where("studentIds", "array-contains", currentStudent.id));
-                const snapshot = await getDocs(q);
-
-                if (!snapshot.empty) {
-                    // Assume student is in only one active class for now
-                    const turmaDoc = snapshot.docs.find(t => !t.data().finalizada);
-                    if(turmaDoc) {
-                        currentUnitData = { id: turmaDoc.id, ...turmaDoc.data(), type: 'turma' };
-                    }
-                }
-            }
-
-            // Load Attendance
-            if (currentUnitData) {
-                const attendanceRef = doc(db, `artifacts/${appId}/public/data/attendance`, currentUnitData.id);
-                const attSnap = await getDoc(attendanceRef);
-                if (attSnap.exists()) {
-                    attendanceData = attSnap.data();
-                }
-            }
-        }
-
-        // --- RENDER FUNCTIONS ---
-
-        function renderStudentProfile() {
-            // Admin Banner
-            const adminBanner = document.getElementById('admin-banner');
-            if (isAdminView) {
-                adminBanner.classList.remove('hidden');
-                adminBanner.textContent = `MODO DE VISUALIZAÇÃO (ADMIN) - Vendo como: ${currentStudent.name}`;
-            } else {
-                adminBanner.classList.add('hidden');
-            }
-
-            // Header
-            document.getElementById('header-name').textContent = currentStudent.name.split(' ')[0]; // First name
-            document.getElementById('header-initials').textContent = getInitials(currentStudent.name);
-            
-            // Card
-            document.getElementById('student-modalidade').textContent = currentStudent.modalidade || 'TURMA';
-            document.getElementById('student-level').textContent = currentUnitData?.level || currentStudent.currentLevel || 'Nível não definido';
-            
-            const teacherName = currentUnitData?.teacherName || 'Não atribuído';
-            document.getElementById('student-teacher').textContent = teacherName;
-        }
-
-        function renderPEF() {
-            const grid = document.getElementById('pef-grid');
-            grid.innerHTML = '';
-            
-            let presentCount = 0;
-            let absentCount = 0;
-            let totalClasses = 0;
-
-            const lessons = attendanceData?.lessons || {};
-
-            // Render 40 lessons grid
-            for (let i = 1; i <= 40; i++) {
-                const lesson = lessons[i];
-                let status = ''; // P, F, PP, or empty
-                let date = '';
-
-                if (lesson && lesson.date) {
-                    // Check student status
-                    if (currentUnitData.type === 'turma') {
-                        status = lesson.students?.[currentStudent.id] || '';
-                    } else {
-                        // VIP usually has one student, or check specific ID
-                        // VIP structure might be simpler or same as turma
-                        status = lesson.students?.[currentStudent.id] || ''; 
-                        // Fallback for older VIP structure if needed
-                        if(!status && lesson.status) status = lesson.status; 
-                    }
-                    date = lesson.date.split('-').reverse().slice(0,2).join('/'); // DD/MM
-                }
-
-                // Stats
-                if (status === 'P') presentCount++;
-                if (status === 'F') absentCount++;
-                if (status === 'PP') presentCount += 0.5; // Partial presence
-                if (status) totalClasses++;
-
-                // Visuals
-                let bgClass = 'bg-stone-100 text-stone-400';
-                let borderClass = 'border-transparent';
-                
-                if (status === 'P') { bgClass = 'bg-green-100 text-green-700 border-green-200'; }
-                else if (status === 'F') { bgClass = 'bg-red-100 text-red-700 border-red-200'; }
-                else if (status === 'PP') { bgClass = 'bg-yellow-100 text-yellow-700 border-yellow-200'; }
-
-                const cell = document.createElement('div');
-                cell.className = `aspect-square rounded-lg flex flex-col items-center justify-center text-xs font-bold border ${bgClass}`;
-                cell.innerHTML = `
-                    <span>${i}</span>
-                    <span class="text-[9px] font-normal opacity-70">${status || '-'}</span>
-                `;
-                grid.appendChild(cell);
-            }
-
-            // Update stats
-            document.getElementById('pef-present-count').textContent = presentCount;
-            document.getElementById('pef-absent-count').textContent = absentCount;
-            
-            // Home Stats
-            document.getElementById('stat-classes').textContent = totalClasses;
-            const percentage = totalClasses > 0 ? Math.round((presentCount / totalClasses) * 100) : 0;
-            document.getElementById('stat-attendance').textContent = `${percentage}%`;
-        }
-
-        function renderGrades() {
-            let grades = {};
-            let obs = "";
-
-            if (currentUnitData?.type === 'turma') {
-                grades = currentUnitData.studentGrades?.[currentStudent.id] || {};
-                obs = grades.observacao || "";
-            } else if (currentUnitData?.type === 'vip') {
-                grades = currentUnitData.grades || {};
-                obs = grades.observacao || grades.observacoes || "";
-            }
-
-            // Default zero
-            const getGrade = (val) => parseFloat(val) || 0;
-
-            const scores = [
-                { label: 'Midterm', val: getGrade(grades.midtermTest), max: 20 },
-                { label: 'Listening', val: getGrade(grades.listeningTest), max: 20 },
-                { label: 'Grammar', val: getGrade(grades.grammarTest), max: 20 },
-                { label: 'Oral', val: getGrade(grades.oralTest), max: 20 },
-                { label: 'Participation', val: getGrade(grades.participacao), max: 10 },
-                { label: 'Attendance', val: getGrade(grades.assiduidade), max: 10 },
-            ];
-
-            const total = scores.reduce((a, b) => a + b.val, 0);
-            
-            // Final Grade Display
-            document.getElementById('final-grade').textContent = total.toFixed(1);
-            
-            const badge = document.getElementById('approval-badge');
-            if (total >= 70) {
-                badge.textContent = "Aprovado";
-                badge.className = "inline-block mt-3 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold uppercase tracking-wider";
-            } else if (total > 0) {
-                badge.textContent = "Em andamento";
-                badge.className = "inline-block mt-3 px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold uppercase tracking-wider";
-            } else {
-                badge.textContent = "Pendente";
-                badge.className = "inline-block mt-3 px-3 py-1 bg-stone-100 text-stone-500 rounded-full text-xs font-bold uppercase tracking-wider";
-            }
-
-            // List
-            const list = document.getElementById('grades-list');
-            list.innerHTML = scores.map(s => {
-                const percent = (s.val / s.max) * 100;
-                return `
-                <div>
-                    <div class="flex justify-between text-sm mb-1">
-                        <span class="font-medium text-stone-600">${s.label}</span>
-                        <span class="font-bold text-stone-800">${s.val}/${s.max}</span>
-                    </div>
-                    <div class="w-full bg-stone-100 rounded-full h-2.5 overflow-hidden">
-                        <div class="bg-[#F1D24B] h-2.5 rounded-full" style="width: ${percent}%"></div>
-                    </div>
-                </div>
-                `;
-            }).join('');
-
-            // Observações
-            const notesContainer = document.getElementById('teacher-notes-container');
-            if (obs) {
-                document.getElementById('teacher-notes').textContent = obs;
-                notesContainer.classList.remove('hidden');
-            } else {
-                notesContainer.classList.add('hidden');
-            }
-        }
-
-        // --- UTILS ---
-
-        function getInitials(name) {
-            if (!name) return 'AL';
-            const parts = name.trim().split(' ');
-            if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
-            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-        }
-
-        function setFortuneCookie() {
-            const phrases = [
-                "O sucesso é a soma de pequenos esforços repetidos dia após dia.",
-                "Acredite em si mesmo e tudo será possível.",
-                "Cada novo dia é uma oportunidade de crescer e aprender.",
-                "A persistência é o caminho do êxito.",
-                "O aprendizado é um tesouro que seguirá seu dono por toda parte.",
-                "Não pare até se orgulhar."
-            ];
-            const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
-            document.getElementById('fortune-text').textContent = `"${randomPhrase}"`;
-        }
-
-        // --- UI HANDLERS ---
-
-        function showLogin() {
-            document.getElementById('login-view').classList.remove('hidden');
-            document.getElementById('app-view').classList.add('hidden');
-        }
-
-        function showApp() {
-            document.getElementById('login-view').classList.add('hidden');
-            document.getElementById('app-view').classList.remove('hidden');
-        }
-
-        window.toggleAuthMode = function(mode) {
-            const loginForm = document.getElementById('login-form');
-            const signupForm = document.getElementById('signup-form');
-            const errorDivs = document.querySelectorAll('#login-error, #signup-error');
-            
-            // Clear errors
-            errorDivs.forEach(div => div.classList.add('hidden'));
-
-            if (mode === 'signup') {
-                loginForm.classList.add('hidden');
-                signupForm.classList.remove('hidden');
-            } else {
-                signupForm.classList.add('hidden');
-                loginForm.classList.remove('hidden');
-            }
-        }
-
-        window.switchTab = function(tabName) {
-            // Hide all sections
-            ['home', 'pef', 'grades'].forEach(t => {
-                document.getElementById(`tab-${t}`).classList.add('hidden');
-                document.getElementById(`nav-${t}`).classList.remove('active');
             });
-
-            // Show selected
-            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
-            document.getElementById(`nav-${tabName}`).classList.add('active');
             
-            // Scroll to top
-            document.getElementById('main-content').scrollTo(0,0);
+            renderLevelCards();
         }
 
-        // --- EVENT LISTENERS ---
+        /**
+         * Renders the filter buttons dynamically.
+         */
+        function renderFilterButtons() {
+             filterContainer.innerHTML = '';
 
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            const errorDiv = document.getElementById('login-error');
+             // Use the fixed LEVEL_ORDER for tags, plus 'ALL'
+             const tags = ['ALL', ...LEVEL_ORDER.filter(tag => modulesByTag[tag] && modulesByTag[tag].length > 0)];
+
+             tags.forEach(tag => {
+                 const button = document.createElement('button');
+                 button.className = `filter-button ${tag === currentFilter ? 'active' : ''}`;
+                 button.setAttribute('data-tag', tag);
+                 button.textContent = tag === 'ALL' ? 'Todos os Níveis' : tag;
+                 button.onclick = () => filterModules(tag);
+                 filterContainer.appendChild(button);
+             });
+        }
+        
+        /**
+         * Renders the Module cards on the Dashboard in a grid layout.
+         */
+        window.renderLevelCards = function() {
+            cardsContainer.innerHTML = '';
             
-            errorDiv.classList.add('hidden');
+            const filteredModules = sortedModules.filter(data => 
+                currentFilter === 'ALL' || data.module_tag === currentFilter
+            );
 
-            try {
-                // Sign in with Firebase Auth (users must exist in Auth)
-                await signInWithEmailAndPassword(auth, email, password);
-                // Listener will handle redirection
-            } catch (error) {
-                console.error(error);
-                errorDiv.textContent = "E-mail ou senha inválidos. Tente novamente.";
-                errorDiv.classList.remove('hidden');
-            }
-        });
+            filteredModules.forEach((data) => {
+                const moduleName = data.name;
+                const moduleTag = data.module_tag;
+                const moduleNumber = data.moduleNumber;
+                const description = data.description || "Módulo de acurácia estrutural. Pratique até dominar o conteúdo.";
 
-        document.getElementById('signup-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('signup-email').value;
-            const password = document.getElementById('signup-password').value;
-            const errorDiv = document.getElementById('signup-error');
-            const loader = document.getElementById('signup-btn-loader');
-            const btnText = document.getElementById('signup-btn-text');
-            
-            errorDiv.classList.add('hidden');
-            loader.classList.remove('hidden');
-            btnText.textContent = 'Verificando...';
-
-            try {
-                // 1. Verify if email exists in students collection first
-                const studentsRef = collection(db, `artifacts/${appId}/public/data/students`);
-                const q = query(studentsRef, where("email", "==", email));
-                const querySnapshot = await getDocs(q);
-
-                if (querySnapshot.empty) {
-                    throw new Error("Este e-mail não está cadastrado como aluno. Contate a secretaria.");
-                }
-
-                // 2. Create Authentication User
-                await createUserWithEmailAndPassword(auth, email, password);
+                const card = document.createElement('div');
+                // Added relative class to make logo positioning work
+                card.className = `level-card relative`; 
                 
-                // Success will trigger onAuthStateChanged
-            } catch (error) {
-                console.error(error);
-                let msg = error.message;
-                if (error.code === 'auth/email-already-in-use') {
-                    msg = "Este e-mail já possui cadastro. Faça login.";
-                } else if (error.code === 'auth/weak-password') {
-                    msg = "A senha deve ter pelo menos 6 caracteres.";
-                }
-                errorDiv.textContent = msg;
-                errorDiv.classList.remove('hidden');
-            } finally {
-                loader.classList.add('hidden');
-                btnText.textContent = 'Cadastrar';
+                // Determine question count for range display (for practice button visibility logic if needed)
+                const questionCount = data.questions.length;
+                const rangeDisplay = `${questionCount} Qs`; // Kept for reference but not displayed
+
+                card.innerHTML = `
+                    <div class="h-full flex flex-col justify-between pt-0">
+                        <div class="pb-4">
+                            <!-- Logo Inserida: top-4 right-4 para dar o espaçamento de 1rem -->
+                            <img src="https://res.cloudinary.com/dqfi22uz0/image/upload/v1760657894/SLAP_ICON_PRETO_2_2_tv8bmp.png" 
+                                 alt="SLAP Icon" 
+                                 class="absolute top-4 right-4 w-8 h-8 pointer-events-none"
+                                 onerror="this.style.display='none';" />
+                            
+                            <span class="module-tag">${moduleTag} - MÓDULO ${moduleNumber}</span>
+                            <h3 class="text-xl font-bold text-stone-800 mb-1 mt-2">${moduleName}</h3>
+                            <p class="text-stone-600 text-sm italic mb-4">
+                                ${description}
+                            </p>
+                        </div>
+                        
+                        <div class="mt-4 flex flex-wrap gap-3">
+                            <!-- NEW: Study Button -->
+                            <button class="secondary-button flex-1 text-sm" onclick="openStudyView('${moduleName}')">
+                                STUDY
+                            </button>
+                            <!-- Only Practice Button (Qs count removed) -->
+                            <button class="action-button flex-1 text-sm" onclick="openQuestionGenerator('${moduleName}')">
+                                PRACTICE
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                cardsContainer.appendChild(card);
+            });
+            
+            // If no modules match the filter
+            if (filteredModules.length === 0) {
+                 cardsContainer.innerHTML = `<p class="text-center text-lg text-stone-500 col-span-full py-10">Nenhum módulo encontrado para o nível ${currentFilter}.</p>`;
             }
-        });
+        }
 
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            if(confirm("Deseja sair do portal?")) {
-                signOut(auth);
-            }
-        });
-
-        // Initialize
-        initApp();
-
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            // Hides main content initially
+            document.getElementById('main-wrapper').classList.add('hidden');
+            // Shows login gate initially
+            loginGate.style.display = 'flex';
+        };
     </script>
 </body>
 </html>
