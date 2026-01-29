@@ -193,9 +193,10 @@
         /* Locked State Styles */
         .level-card.locked {
             filter: grayscale(100%);
-            opacity: 0.6;
-            pointer-events: none; /* Disable clicks */
+            opacity: 0.7;
             position: relative;
+            /* pointer-events: none; REMOVIDO para permitir o clique e o alerta */
+            cursor: not-allowed;
         }
         
         .level-card.locked::after {
@@ -221,6 +222,7 @@
             border-radius: 50%;
             padding: 1rem;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            pointer-events: none; /* O overlay não deve bloquear o clique no card */
         }
 
         /* Login Gate Specific Styles */
@@ -1589,19 +1591,18 @@
             
             // Update button styles
             document.querySelectorAll('.filter-button').forEach(btn => {
+                // Remove active class from all
+                btn.classList.remove('active');
+                
+                // Add active class if it matches
                 if (btn.getAttribute('data-tag') === tag) {
                     btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
                 }
             });
             
             renderLevelCards();
         }
 
-        /**
-         * Renders the filter buttons dynamically.
-         */
         function renderFilterButtons() {
              filterContainer.innerHTML = '';
 
@@ -1610,9 +1611,27 @@
 
              tags.forEach(tag => {
                  const button = document.createElement('button');
-                 button.className = `filter-button ${tag === currentFilter ? 'active' : ''}`;
+                 
+                 // Determine if this specific level button is locked
+                 let isLocked = false;
+                 if (tag !== 'ALL') {
+                     const levelIndex = LEVEL_ORDER.indexOf(tag);
+                     if (levelIndex > currentUserMaxLevelIndex) {
+                         isLocked = true;
+                     }
+                 }
+
+                 button.className = `filter-button ${tag === currentFilter ? 'active' : ''} ${isLocked ? 'opacity-60 grayscale' : ''}`;
                  button.setAttribute('data-tag', tag);
-                 button.textContent = tag === 'ALL' ? 'Todos os Níveis' : tag;
+                 
+                 // Add Lock Icon if locked
+                 const lockIcon = isLocked 
+                    ? `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block mr-1.5 mb-0.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>` 
+                    : '';
+
+                 // Set innerHTML to include icon
+                 button.innerHTML = `${lockIcon}${tag === 'ALL' ? 'Todos os Níveis' : tag}`;
+                 
                  button.onclick = () => filterModules(tag);
                  filterContainer.appendChild(button);
              });
@@ -1637,38 +1656,41 @@
                 const description = data.description || "Módulo de acurácia estrutural. Pratique até dominar o conteúdo.";
 
                 // Calculate if module is locked
-                // Find index of this module's level in the ordered list
                 const moduleLevelIndex = LEVEL_ORDER.indexOf(moduleTag);
                 const isLocked = moduleLevelIndex > currentUserMaxLevelIndex;
 
                 const card = document.createElement('div');
-                // Added relative class to make logo positioning work, AND 'locked' if necessary
                 card.className = `level-card relative ${isLocked ? 'locked' : ''}`; 
                 
-                // Add click handler for locked cards to show alert
+                // Add click handler for locked cards
                 if (isLocked) {
-                    card.onclick = () => alert("Nível bloqueado! Complete os níveis anteriores ou use uma senha de acesso superior.");
+                    card.onclick = (e) => {
+                        // Prevent alert if clicking on button (since buttons have their own alert)
+                        if (!e.target.closest('button')) {
+                            alert("Nível bloqueado! Complete os níveis anteriores ou use uma senha de acesso superior.");
+                        }
+                    };
                 }
 
-                // Determine question count for range display (for practice button visibility logic if needed)
-                const questionCount = data.questions.length;
-                const rangeDisplay = `${questionCount} Qs`; // Kept for reference but not displayed
-
-                // Insert Lock Overlay if locked
+                // Lock icon overlay for card center (Visual Only)
                 const lockOverlay = isLocked ? `
                     <div class="lock-overlay">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                     </div>
                 ` : '';
 
-                // Buttons state (disabled if locked)
-                const buttonState = isLocked ? 'disabled' : '';
+                // Lock icon SVG for buttons
+                const lockIconForButton = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block mr-1 mb-0.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>`;
+
+                // Define button content and action based on lock state
+                const studyButtonContent = isLocked ? `${lockIconForButton} STUDY` : `STUDY`;
+                const practiceButtonContent = isLocked ? `${lockIconForButton} PRACTICE` : `PRACTICE`;
+                const clickAction = "alert('Nível bloqueado! Complete os níveis anteriores ou use uma senha de acesso superior.'); event.stopPropagation();";
 
                 card.innerHTML = `
                     ${lockOverlay}
                     <div class="h-full flex flex-col justify-between pt-0">
                         <div class="pb-4">
-                            <!-- Logo Inserida: top-4 right-4 para dar o espaçamento de 1rem -->
                             <img src="https://res.cloudinary.com/dqfi22uz0/image/upload/v1760657894/SLAP_ICON_PRETO_2_2_tv8bmp.png" 
                                  alt="SLAP Icon" 
                                  class="absolute top-4 right-4 w-8 h-8 pointer-events-none"
@@ -1682,13 +1704,11 @@
                         </div>
                         
                         <div class="mt-4 flex flex-wrap gap-3">
-                            <!-- NEW: Study Button -->
-                            <button class="secondary-button flex-1 text-sm" ${buttonState} onclick="${isLocked ? '' : `openStudyView('${moduleName}')`}">
-                                STUDY
+                            <button class="secondary-button flex-1 text-sm flex items-center justify-center" onclick="${isLocked ? clickAction : `openStudyView('${moduleName}')`}">
+                                ${studyButtonContent}
                             </button>
-                            <!-- Only Practice Button (Qs count removed) -->
-                            <button class="action-button flex-1 text-sm" ${buttonState} onclick="${isLocked ? '' : `openQuestionGenerator('${moduleName}')`}">
-                                PRACTICE
+                            <button class="action-button flex-1 text-sm flex items-center justify-center" onclick="${isLocked ? clickAction : `openQuestionGenerator('${moduleName}')`}">
+                                ${practiceButtonContent}
                             </button>
                         </div>
                     </div>
@@ -1697,7 +1717,6 @@
                 cardsContainer.appendChild(card);
             });
             
-            // If no modules match the filter
             if (filteredModules.length === 0) {
                  cardsContainer.innerHTML = `<p class="text-center text-lg text-stone-500 col-span-full py-10">Nenhum módulo encontrado para o nível ${currentFilter} com o termo "${currentSearchTerm}".</p>`;
             }
