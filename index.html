@@ -189,6 +189,39 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
             border-color: #8671d1; /* Purple border on hover */
         }
+        
+        /* Locked State Styles */
+        .level-card.locked {
+            filter: grayscale(100%);
+            opacity: 0.6;
+            pointer-events: none; /* Disable clicks */
+            position: relative;
+        }
+        
+        .level-card.locked::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            z-index: 10;
+        }
+        
+        /* Lock Icon Overlay */
+        .lock-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 20;
+            background-color: rgba(68, 64, 60, 0.8);
+            border-radius: 50%;
+            padding: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
 
         /* Login Gate Specific Styles */
         #login-gate {
@@ -275,11 +308,11 @@
     <div id="login-gate">
         <div class="login-card text-center">
             <h1 class="text-3xl font-bold mb-4 text-[#8671d1]">SLAP Grammar Track Access</h1>
-            <p class="text-lg font-medium mb-6">Para entrar, adivinhe o nome da cantora que estou pensando:</p>
+            <p class="text-lg font-medium mb-6">Para entrar, digite a senha da sua cantora:</p>
             
             <form id="login-form" onsubmit="checkPassword(event)">
                 <label for="password-input" class="block text-left font-semibold text-sm mb-1">
-                    Cantora (em minúsculas):
+                    Senha (Cantora):
                 </label>
                 <input 
                     type="password" 
@@ -291,7 +324,7 @@
                 <button type="submit" class="login-button">
                     Entrar na Trilha Gramatical
                 </button>
-                <p id="login-feedback" class="mt-4 text-red-600 hidden font-bold">Cantora incorreta. Tente novamente!</p>
+                <p id="login-feedback" class="mt-4 text-red-600 hidden font-bold">Senha incorreta. Tente novamente!</p>
             </form>
         </div>
     </div>
@@ -304,15 +337,32 @@
             <img src="https://res.cloudinary.com/dqfi22uz0/image/upload/v1759294967/SLAP_TIPO_PRETO_2_kismg9.png" alt="SLAP Logo Preto" class="w-32 h-auto mx-auto mb-2">
             <!-- TITLE UPDATED TO SLAP GRAMMAR TRAINING TRACK -->
             <h1 class="text-3xl font-bold text-center text-stone-800">SLAP Grammar Training Track</h1>
-            <p class="text-center text-stone-500">Módulos de Certificação Estrutural (Foco em Accuracy)</p>
+            <p class="text-center text-stone-500">Módulos de Certificação Estrutural (Foco em Acurácia)</p>
         </header>
 
         <!-- DASHBOARD VIEW -->
         <div id="dashboard-view" class="w-full">
-            <h2 class="text-xl font-semibold text-stone-700 mb-6 text-center sm:text-left" id="dashboard-title">Selecione o Módulo Gramatical:</h2>
+            <!-- UPDATED: Centered title -->
+            <h2 class="text-xl font-semibold text-stone-700 mb-6 text-center" id="dashboard-title">Selecione o Módulo Gramatical:</h2>
             
-            <!-- NEW: Filter Buttons -->
-            <div id="filter-container" class="mb-8 flex flex-wrap gap-3 justify-start">
+            <!-- NEW: Search Input -->
+            <div class="flex justify-center mb-8">
+                <div class="relative w-full max-w-md">
+                    <input 
+                        type="text" 
+                        id="search-input" 
+                        class="w-full px-4 py-2 border-2 border-stone-200 rounded-lg focus:outline-none focus:border-[#8671d1] transition-colors"
+                        placeholder="Pesquisar por assunto..."
+                        oninput="handleSearch(this.value)"
+                    >
+                    <svg class="absolute right-3 top-2.5 text-stone-400 w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- UPDATED: Filter Buttons Centered -->
+            <div id="filter-container" class="mb-8 flex flex-wrap gap-3 justify-center">
                 <!-- Buttons will be injected here by JS -->
             </div>
 
@@ -387,6 +437,8 @@
         let currentQuestion = null; // CURRENTLY DISPLAYED QUESTION
         let answerSubmitted = false;
         let currentFilter = 'ALL'; // Tracks the current filter tag (e.g., 'STARTER 1', 'ALL')
+        let currentSearchTerm = ''; // Tracks the current search query
+        let currentUserMaxLevelIndex = -1; // Stores the max allowed level index for the user
         
         // Fixed order of levels for proper numbering
         const LEVEL_ORDER = [
@@ -396,6 +448,20 @@
             'JUNIOR 1', 'JUNIOR 2', 
             'SENIOR 1', 'SENIOR 2'
         ];
+
+        // Access Passwords (Singers)
+        const LEVEL_PASSWORDS = {
+            'ariana': 0,  // STARTER 1
+            'beyonce': 1, // STARTER 2
+            'madonna': 2, // FRESHMAN 1
+            'shakira': 3, // FRESHMAN 2
+            'adele': 4,   // SOPHOMORE 1
+            'rihanna': 5, // SOPHOMORE 2
+            'taylor': 6,  // JUNIOR 1
+            'gaga': 7,    // JUNIOR 2
+            'katy': 8,    // SENIOR 1
+            'britney': 9  // SENIOR 2
+        };
 
         // Letters for options
         const optionPrefixes = ['A', 'B', 'C', 'D'];
@@ -1206,9 +1272,10 @@
         window.checkPassword = function(event) {
             event.preventDefault();
             const password = passwordInput.value.toLowerCase().trim();
-            const correctPassword = "ariana"; // CHAVE SECRETA: ariana
-            
-            if (password === correctPassword) {
+
+            if (LEVEL_PASSWORDS.hasOwnProperty(password)) {
+                currentUserMaxLevelIndex = LEVEL_PASSWORDS[password];
+                
                 // IMPORTANT FIX: Use display: none on the gate to remove it from document flow
                 loginGate.style.display = 'none'; 
                 document.getElementById('main-wrapper').classList.remove('hidden');
@@ -1216,7 +1283,7 @@
                 renderFilterButtons(); // NEW: Render filters first
                 renderLevelCards(); // Render cards based on default filter
             } else {
-                loginFeedback.textContent = "Cantora incorreta. Tente novamente!";
+                loginFeedback.textContent = "Senha incorreta. Tente novamente!";
                 loginFeedback.classList.remove('hidden');
                 passwordInput.value = '';
             }
@@ -1255,6 +1322,12 @@
             backButtonText.textContent = "Voltar para Módulos";
             nextButtonText.textContent = "Gerar Próxima Pergunta";
             renderLevelCards(); // Re-render cards in case of a filter change before exit
+        }
+
+        // --- SEARCH FUNCTIONALITY ---
+        window.handleSearch = function(value) {
+            currentSearchTerm = value.toLowerCase().trim();
+            renderLevelCards();
         }
 
         window.openQuestionGenerator = function(moduleName) {
@@ -1551,9 +1624,11 @@
         window.renderLevelCards = function() {
             cardsContainer.innerHTML = '';
             
-            const filteredModules = sortedModules.filter(data => 
-                currentFilter === 'ALL' || data.module_tag === currentFilter
-            );
+            const filteredModules = sortedModules.filter(data => {
+                const matchesFilter = currentFilter === 'ALL' || data.module_tag === currentFilter;
+                const matchesSearch = data.name.toLowerCase().includes(currentSearchTerm);
+                return matchesFilter && matchesSearch;
+            });
 
             filteredModules.forEach((data) => {
                 const moduleName = data.name;
@@ -1561,15 +1636,36 @@
                 const moduleNumber = data.moduleNumber;
                 const description = data.description || "Módulo de acurácia estrutural. Pratique até dominar o conteúdo.";
 
+                // Calculate if module is locked
+                // Find index of this module's level in the ordered list
+                const moduleLevelIndex = LEVEL_ORDER.indexOf(moduleTag);
+                const isLocked = moduleLevelIndex > currentUserMaxLevelIndex;
+
                 const card = document.createElement('div');
-                // Added relative class to make logo positioning work
-                card.className = `level-card relative`; 
+                // Added relative class to make logo positioning work, AND 'locked' if necessary
+                card.className = `level-card relative ${isLocked ? 'locked' : ''}`; 
                 
+                // Add click handler for locked cards to show alert
+                if (isLocked) {
+                    card.onclick = () => alert("Nível bloqueado! Complete os níveis anteriores ou use uma senha de acesso superior.");
+                }
+
                 // Determine question count for range display (for practice button visibility logic if needed)
                 const questionCount = data.questions.length;
                 const rangeDisplay = `${questionCount} Qs`; // Kept for reference but not displayed
 
+                // Insert Lock Overlay if locked
+                const lockOverlay = isLocked ? `
+                    <div class="lock-overlay">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    </div>
+                ` : '';
+
+                // Buttons state (disabled if locked)
+                const buttonState = isLocked ? 'disabled' : '';
+
                 card.innerHTML = `
+                    ${lockOverlay}
                     <div class="h-full flex flex-col justify-between pt-0">
                         <div class="pb-4">
                             <!-- Logo Inserida: top-4 right-4 para dar o espaçamento de 1rem -->
@@ -1587,11 +1683,11 @@
                         
                         <div class="mt-4 flex flex-wrap gap-3">
                             <!-- NEW: Study Button -->
-                            <button class="secondary-button flex-1 text-sm" onclick="openStudyView('${moduleName}')">
+                            <button class="secondary-button flex-1 text-sm" ${buttonState} onclick="${isLocked ? '' : `openStudyView('${moduleName}')`}">
                                 STUDY
                             </button>
                             <!-- Only Practice Button (Qs count removed) -->
-                            <button class="action-button flex-1 text-sm" onclick="openQuestionGenerator('${moduleName}')">
+                            <button class="action-button flex-1 text-sm" ${buttonState} onclick="${isLocked ? '' : `openQuestionGenerator('${moduleName}')`}">
                                 PRACTICE
                             </button>
                         </div>
@@ -1603,7 +1699,7 @@
             
             // If no modules match the filter
             if (filteredModules.length === 0) {
-                 cardsContainer.innerHTML = `<p class="text-center text-lg text-stone-500 col-span-full py-10">Nenhum módulo encontrado para o nível ${currentFilter}.</p>`;
+                 cardsContainer.innerHTML = `<p class="text-center text-lg text-stone-500 col-span-full py-10">Nenhum módulo encontrado para o nível ${currentFilter} com o termo "${currentSearchTerm}".</p>`;
             }
         }
 
